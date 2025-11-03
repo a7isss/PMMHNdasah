@@ -8,7 +8,7 @@ from typing import Optional, List, Dict, Any
 from uuid import uuid4
 import structlog
 from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table
-from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY, VECTOR
+from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 
 from database import Base
@@ -47,7 +47,7 @@ class WhatsAppContact(Base, BaseModel):
     # AI Integration
     ai_personality_profile: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
     ai_communication_history: Mapped[List[Dict[str, Any]]] = mapped_column(JSONB, default=list)
-    embedding: Mapped[Optional[Any]] = mapped_column(VECTOR(1536))
+    embedding: Mapped[Optional[List[float]]] = mapped_column(JSONB, nullable=True)  # Vector embeddings stored as JSONB for now
 
     # Status
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
@@ -178,7 +178,7 @@ class WhatsAppMessage(Base, BaseModel):
         server_default=text("to_tsvector('english', coalesce(content, ''))"),
         index=True
     )
-    embedding: Mapped[Optional[Any]] = mapped_column(VECTOR(1536))
+    embedding: Mapped[Optional[List[float]]] = mapped_column(JSONB, nullable=True)  # Vector embeddings stored as JSONB for now
 
     # Relationships
     contact: Mapped["WhatsAppContact"] = relationship("WhatsAppContact", back_populates="messages")

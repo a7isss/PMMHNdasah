@@ -12,7 +12,7 @@ from sqlalchemy import text
 import redis.asyncio as redis
 
 from config import settings
-from models.sqlalchemy import *
+# from models.sqlalchemy import *  # Commented out to avoid VECTOR import errors
 
 logger = structlog.get_logger(__name__)
 

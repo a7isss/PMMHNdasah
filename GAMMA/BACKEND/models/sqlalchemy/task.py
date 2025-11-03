@@ -8,7 +8,7 @@ from typing import Optional, List, Dict, Any
 from uuid import uuid4
 import structlog
 from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table
-from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY, VECTOR
+from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 
 from database import Base
@@ -67,7 +67,7 @@ class Task(Base, BaseModel):
     ai_priority_score: Mapped[Optional[DECIMAL]] = mapped_column(DECIMAL(3, 2))
     ai_risk_score: Mapped[Optional[DECIMAL]] = mapped_column(DECIMAL(3, 2))
     ai_insights: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
-    embedding: Mapped[Optional[Any]] = mapped_column(VECTOR(1536))
+    embedding: Mapped[Optional[List[float]]] = mapped_column(JSONB, nullable=True)  # Vector embeddings stored as JSONB for now
     search_vector: Mapped[Any] = mapped_column(
         text,
         server_default=text("to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, ''))"),
