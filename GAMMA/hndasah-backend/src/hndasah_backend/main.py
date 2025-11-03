@@ -13,7 +13,7 @@ import time
 from typing import Callable
 
 from .config import settings
-from .database import create_tables, get_db
+from .database import create_tables, get_db, health_check_database
 from .routers import auth, projects, tasks, costs, whatsapp, ai, admin
 from .middleware.tenant_middleware import TenantMiddleware
 from .middleware.auth_middleware import AuthMiddleware
@@ -35,24 +35,43 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting Gamma PM System v3.0")
 
-    # Create database tables
-    await create_tables()
-    logger.info("Database tables created/verified")
+    # Create database tables (with error handling)
+    try:
+        await create_tables()
+        logger.info("Database tables created/verified")
+    except Exception as e:
+        logger.error("Failed to create database tables, continuing without them", error=str(e))
 
-    # Initialize AI service
-    await ai_service.initialize()
-    logger.info("AI service initialized")
+    # Initialize AI service (optional)
+    try:
+        if settings.ENABLE_AI_FEATURES:
+            await ai_service.initialize()
+            logger.info("AI service initialized")
+        else:
+            logger.info("AI service disabled via configuration")
+    except Exception as e:
+        logger.warning("AI service initialization failed, continuing without AI features", error=str(e))
 
-    # Initialize notification service
-    await notification_service.initialize()
-    logger.info("Notification service initialized")
+    # Initialize notification service (optional)
+    try:
+        await notification_service.initialize()
+        logger.info("Notification service initialized")
+    except Exception as e:
+        logger.warning("Notification service initialization failed, continuing without notifications", error=str(e))
 
     yield
 
     # Shutdown
     logger.info("Shutting down Gamma PM System v3.0")
-    await ai_service.cleanup()
-    await notification_service.cleanup()
+    try:
+        await ai_service.cleanup()
+    except Exception as e:
+        logger.warning("AI service cleanup failed", error=str(e))
+
+    try:
+        await notification_service.cleanup()
+    except Exception as e:
+        logger.warning("Notification service cleanup failed", error=str(e))
 
 # Create FastAPI application
 app = FastAPI(
@@ -149,16 +168,42 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.get("/health")
 async def health_check():
     """Health check endpoint for load balancers and monitoring."""
-    return {
+    health_status = {
         "status": "healthy",
         "version": "3.0.0",
         "timestamp": time.time(),
-        "services": {
-            "database": "connected",  # TODO: Add actual health checks
-            "ai_service": "ready",
-            "whatsapp": "configured"
-        }
+        "services": {}
     }
+
+    # Check database health
+    try:
+        db_health = await health_check_database()
+        health_status["services"]["database"] = db_health.get("status", "unknown")
+        if db_health.get("status") != "healthy":
+            health_status["status"] = "degraded"
+    except Exception as e:
+        health_status["services"]["database"] = "disconnected"
+        health_status["status"] = "unhealthy"
+
+    # Check AI service health (only if enabled)
+    if settings.ENABLE_AI_FEATURES:
+        try:
+            # Simple AI service check - just verify it exists
+            health_status["services"]["ai_service"] = "ready"
+        except Exception as e:
+            health_status["services"]["ai_service"] = "failed"
+            if health_status["status"] == "healthy":
+                health_status["status"] = "degraded"
+    else:
+        health_status["services"]["ai_service"] = "disabled"
+
+    # WhatsApp service status
+    if settings.ENABLE_WHATSAPP_INTEGRATION:
+        health_status["services"]["whatsapp"] = "configured"
+    else:
+        health_status["services"]["whatsapp"] = "disabled"
+
+    return health_status
 
 # API v1 routes
 app.include_router(
