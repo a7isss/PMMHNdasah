@@ -4,7 +4,7 @@
     "builder": "NIXPACKS"
   },
   "deploy": {
-    "startCommand": "uv run uvicorn src.hndasah_backend.main:app --host 0.0.0.0 --port $PORT",
+    "startCommand": "PYTHONPATH=/app/src python -m uvicorn hndasah_backend.main:app --host 0.0.0.0 --port $PORT",
     "healthcheckPath": "/health",
     "healthcheckTimeout": 300,
     "restartPolicyType": "ON_FAILURE",

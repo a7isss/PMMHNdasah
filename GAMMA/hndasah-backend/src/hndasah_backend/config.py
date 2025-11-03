@@ -32,11 +32,11 @@ class Settings(BaseSettings):
         "https://*.whatsapppm.com"
     ]
 
-    # Database
-    DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost/whatsapp_pm"
-    SUPABASE_URL: str = ""
-    SUPABASE_ANON_KEY: str = ""
-    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    # Database - Railway will provide DATABASE_URL
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:password@localhost/whatsapp_pm")
+    SUPABASE_URL: Optional[str] = None
+    SUPABASE_ANON_KEY: Optional[str] = None
+    SUPABASE_SERVICE_ROLE_KEY: Optional[str] = None
 
     # Authentication
     JWT_SECRET_KEY: str = secrets.token_urlsafe(32)
@@ -44,17 +44,17 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    # WhatsApp Integration
+    # WhatsApp Integration (Optional for initial deployment)
     WHATSAPP_API_VERSION: str = "v18.0"
-    WHATSAPP_ACCESS_TOKEN: str = ""
-    WHATSAPP_PHONE_NUMBER_ID: str = ""
+    WHATSAPP_ACCESS_TOKEN: Optional[str] = None
+    WHATSAPP_PHONE_NUMBER_ID: Optional[str] = None
     WHATSAPP_VERIFY_TOKEN: str = secrets.token_urlsafe(16)
-    WHATSAPP_WEBHOOK_URL: str = ""
+    WHATSAPP_WEBHOOK_URL: Optional[str] = None
 
-    # AI Services
-    OPENAI_API_KEY: str = ""
+    # AI Services (Optional for initial deployment)
+    OPENAI_API_KEY: Optional[str] = None
     OPENAI_MODEL: str = "gpt-4-turbo-preview"
-    ANTHROPIC_API_KEY: str = ""
+    ANTHROPIC_API_KEY: Optional[str] = None
     ANTHROPIC_MODEL: str = "claude-3-opus-20240229"
 
     # AI Configuration
@@ -64,24 +64,24 @@ class Settings(BaseSettings):
     AI_MAX_TOKENS: int = 1000
     AI_TEMPERATURE: float = 0.1
 
-    # Redis/Caching
-    REDIS_URL: str = "redis://localhost:6379"
+    # Redis/Caching (Optional)
+    REDIS_URL: Optional[str] = None
     CACHE_TTL_SECONDS: int = 300
     CACHE_MAX_MEMORY_MB: int = 100
 
-    # Email
-    SMTP_SERVER: str = ""
+    # Email (Optional)
+    SMTP_SERVER: Optional[str] = None
     SMTP_PORT: int = 587
-    SMTP_USERNAME: str = ""
-    SMTP_PASSWORD: str = ""
+    SMTP_USERNAME: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
     EMAIL_FROM: str = "noreply@whatsapppm.com"
 
     # File Storage
     UPLOAD_MAX_SIZE_MB: int = 10
     ALLOWED_FILE_TYPES: List[str] = [".pdf", ".docx", ".xlsx", ".png", ".jpg", ".jpeg"]
 
-    # Monitoring
-    SENTRY_DSN: str = ""
+    # Monitoring (Optional)
+    SENTRY_DSN: Optional[str] = None
     LOG_LEVEL: str = "INFO"
     ENABLE_METRICS: bool = True
 
@@ -90,13 +90,13 @@ class Settings(BaseSettings):
     RATE_LIMIT_REQUESTS: int = 100
     RATE_LIMIT_WINDOW_SECONDS: int = 60
 
-    # External APIs
-    GOOGLE_MAPS_API_KEY: str = ""
-    WEATHER_API_KEY: str = ""
+    # External APIs (Optional)
+    GOOGLE_MAPS_API_KEY: Optional[str] = None
+    WEATHER_API_KEY: Optional[str] = None
 
     # Feature Flags
-    ENABLE_AI_FEATURES: bool = True
-    ENABLE_WHATSAPP_INTEGRATION: bool = True
+    ENABLE_AI_FEATURES: bool = False  # Disabled by default for Railway
+    ENABLE_WHATSAPP_INTEGRATION: bool = False  # Disabled by default for Railway
     ENABLE_REAL_TIME_FEATURES: bool = True
     ENABLE_OFFLINE_MODE: bool = False
 
