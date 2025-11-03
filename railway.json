@@ -1,10 +1,13 @@
 {
   "build": {
-    "builder": "NIXPACKS"
+    "builder": "NIXPACKS",
+    "buildCommand": "echo 'Monorepo detected - deploy individual services only'",
+    "installCommand": "echo 'No installation needed for monorepo root'"
   },
   "deploy": {
-    "startCommand": "echo 'This is a monorepo. Deploy individual services from GAMMA/backend/ and GAMMA/frontend/'",
+    "startCommand": "echo 'DO NOT DEPLOY FROM ROOT - Use GAMMA/backend/ and GAMMA/frontend/ services instead' && exit 1",
     "healthcheckPath": "/",
-    "healthcheckTimeout": 10
+    "healthcheckTimeout": 5,
+    "restartPolicyType": "NEVER"
   }
 }
