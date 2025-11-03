@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Gantt Chart Variant 2: True Vertical Time Axis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        .gantt-container {
+            display: grid;
+            grid-template-columns: 100px repeat(3, 1fr); /* Date column + 3 task columns */
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+        .header-cell {
+            font-weight: bold;
+            padding: 10px;
+            border-bottom: 2px solid #333;
+            text-align: center;
+            background-color: #e0e0e0;
+        }
+        .date-cell {
+            padding: 10px;
+            border-right: 1px solid #ccc;
+            border-bottom: 1px dashed #eee;
+            text-align: center;
+            font-size: 0.9em;
+            background-color: #f9f9f9;
+            position: sticky; /* Keep date visible on scroll if this were a large chart */
+            left: 0;
+        }
+        .task-cell {
+            padding: 5px;
+            border-bottom: 1px dashed #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px; /* Ensure a minimum height for the time slot */
+        }
+        .task-bar {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            text-align: center;
+            width: 90%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .task-bar.design { background-color: #2196F3; }
+        .task-bar.dev { background-color: #FF9800; }
+        .task-bar.test { background-color: #9C27B0; }
+    </style>
+</head>
+<body>
+
+    <h1>Vertical Gantt Chart Variant 2: True Vertical Time Axis (Date-Centric)</h1>
+    <p>This variant is a more literal **vertical flip**, where the **time axis runs vertically** down the page. Each row represents a time unit (a day in this case). Tasks are represented as blocks that span multiple time units in their respective columns. This is still highly vertical-scroll friendly, but horizontal space is consumed by the number of parallel tasks (columns).</p>
+
+    <div class="gantt-container">
+        <!-- Header Row -->
+        <div class="header-cell">Date</div>
+        <div class="header-cell">Task Stream 1 (Design)</div>
+        <div class="header-cell">Task Stream 2 (Frontend)</div>
+        <div class="header-cell">Task Stream 3 (Backend)</div>
+
+        <!-- Data Rows (Time runs vertically) -->
+        <div class="date-cell">Oct 1</div>
+        <div class="task-cell"><div class="task-bar design">Kick-off</div></div>
+        <div class="task-cell"></div>
+        <div class="task-cell"></div>
+
+        <div class="date-cell">Oct 2</div>
+        <div class="task-cell"><div class="task-bar design">Design</div></div>
+        <div class="task-cell"></div>
+        <div class="task-cell"></div>
+
+        <div class="date-cell">Oct 3</div>
+        <div class="task-cell"><div class="task-bar design">Design</div></div>
+        <div class="task-cell"></div>
+        <div class="task-cell"></div>
+
+        <div class="date-cell">Oct 4</div>
+        <div class="task-cell"></div>
+        <div class="task-cell"><div class="task-bar dev">Setup</div></div>
+        <div class="task-cell"></div>
+
+        <div class="date-cell">Oct 5</div>
+        <div class="task-cell"></div>
+        <div class="task-cell"><div class="task-bar dev">Dev</div></div>
+        <div class="task-cell"></div>
+
+        <div class="date-cell">Oct 6</div>
+        <div class="task-cell"></div>
+        <div class="task-cell"><div class="task-bar dev">Dev</div></div>
+        <div class="task-cell"><div class="task-bar test">API Spec</div></div>
+
+        <div class="date-cell">Oct 7</div>
+        <div class="task-cell"></div>
+        <div class="task-cell"><div class="task-bar dev">Dev</div></div>
+        <div class="task-cell"><div class="task-bar test">API Build</div></div>
+
+        <div class="date-cell">Oct 8</div>
+        <div class="task-cell"></div>
+        <div class="task-cell"></div>
+        <div class="task-cell"><div class="task-bar test">API Build</div></div>
+
+        <div class="date-cell">Oct 9</div>
+        <div class="task-cell"></div>
+        <div class="task-cell"></div>
+        <div class="task-cell"></div>
+    </div>
+
+</body>
+</html>

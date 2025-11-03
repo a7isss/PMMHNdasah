@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vertical Gantt Chart Variant 1: Simple Timeline</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        .gantt-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 800px; /* Constrain width for better readability */
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            padding: 10px;
+        }
+        .gantt-header {
+            display: flex;
+            font-weight: bold;
+            padding: 10px 0;
+            border-bottom: 2px solid #333;
+        }
+        .gantt-header > div {
+            flex: 1;
+            text-align: center;
+        }
+        .task-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+            align-items: center;
+        }
+        .task-row:last-child {
+            border-bottom: none;
+        }
+        .task-name {
+            flex: 2;
+            font-weight: bold;
+            padding-left: 10px;
+            text-align: left;
+        }
+        .task-dates {
+            flex: 1;
+            text-align: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .task-bar-container {
+            flex: 4;
+            display: flex;
+            align-items: center;
+            height: 30px;
+            padding: 0 10px;
+        }
+        .task-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            border-radius: 5px;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        /* Vertical Gantt Concept: The timeline is now implicit in the vertical stacking of tasks.
+           The "bar" represents the duration, but the main focus is the vertical flow.
+           For a true vertical flip, the time axis would run vertically, but for a simple HTML variant,
+           we'll focus on making the task list the primary vertical element. */
+        .task-bar-container {
+            /* In this variant, we'll use the horizontal bar to represent progress/status,
+               not time duration, to keep the vertical focus. */
+            flex: 4;
+            display: flex;
+            align-items: center;
+            height: 10px; /* Smaller bar for status */
+            padding: 0 10px;
+        }
+        .task-bar.progress-50 { width: 50%; background-color: #2196F3; }
+        .task-bar.progress-100 { width: 100%; background-color: #4CAF50; }
+        .task-bar.progress-25 { width: 25%; background-color: #FF9800; }
+        .task-bar.progress-75 { width: 75%; background-color: #9C27B0; }
+    </style>
+</head>
+<body>
+
+    <h1>Vertical Gantt Chart Variant 1: Simple Timeline (Task-Centric)</h1>
+    <p>This variant focuses on a **task-centric vertical flow**. The time axis is implicit in the task order and dates, and the horizontal bar is repurposed to show **progress/status** rather than duration, making the chart highly vertical-scroll friendly and print-friendly (each task is a row).</p>
+
+    <div class="gantt-container">
+        <div class="gantt-header">
+            <div class="task-name">Task Name</div>
+            <div class="task-dates">Start / End</div>
+            <div class="task-bar-container">Progress</div>
+        </div>
+
+        <div class="task-row">
+            <div class="task-name">Project Kick-off</div>
+            <div class="task-dates">01/10 - 05/10</div>
+            <div class="task-bar-container"><div class="task-bar progress-100"></div></div>
+        </div>
+
+        <div class="task-row">
+            <div class="task-name">Design Mockups</div>
+            <div class="task-dates">06/10 - 15/10</div>
+            <div class="task-bar-container"><div class="task-bar progress-100"></div></div>
+        </div>
+
+        <div class="task-row">
+            <div class="task-name">Frontend Development</div>
+            <div class="task-dates">16/10 - 30/10</div>
+            <div class="task-bar-container"><div class="task-bar progress-75"></div></div>
+        </div>
+
+        <div class="task-row">
+            <div class="task-name">Backend API Integration</div>
+            <div class="task-dates">25/10 - 10/11</div>
+            <div class="task-bar-container"><div class="task-bar progress-50"></div></div>
+        </div>
+
+        <div class="task-row">
+            <div class="task-name">User Acceptance Testing (UAT)</div>
+            <div class="task-dates">11/11 - 15/11</div>
+            <div class="task-bar-container"><div class="task-bar progress-25"></div></div>
+        </div>
+
+        <div class="task-row">
+            <div class="task-name">Final Deployment</div>
+            <div class="task-dates">16/11 - 17/11</div>
+            <div class="task-bar-container"><div class="task-bar"></div></div>
+        </div>
+    </div>
+
+</body>
+</html>
