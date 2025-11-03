@@ -4,11 +4,12 @@ API request/response models with validation
 """
 
 from .user import *
-from .project import *
-from .task import *
-from .cost import *
-from .whatsapp import *
-from .ai import *
+# TODO: Create missing Pydantic model files
+# from .project import *
+# from .task import *
+# from .cost import *
+# from .whatsapp import *
+# from .ai import *
 
 __all__ = [
     # User models
@@ -17,32 +18,40 @@ __all__ = [
     "UserResponse",
     "UserLogin",
     "TokenResponse",
+    "PasswordResetRequest",
+    "PasswordResetConfirm",
+    "UserPreferences",
+    "AIProfile",
+    "TenantCreate",
+    "TenantResponse",
+    "UserTenantInfo",
 
+    # TODO: Add missing model exports when files are created
     # Project models
-    "ProjectCreate",
-    "ProjectUpdate",
-    "ProjectResponse",
-    "ProjectDetailResponse",
+    # "ProjectCreate",
+    # "ProjectUpdate",
+    # "ProjectResponse",
+    # "ProjectDetailResponse",
 
     # Task models
-    "TaskCreate",
-    "TaskUpdate",
-    "TaskResponse",
+    # "TaskCreate",
+    # "TaskUpdate",
+    # "TaskResponse",
 
     # Cost models
-    "CostItemCreate",
-    "CostItemUpdate",
-    "CostItemResponse",
+    # "CostItemCreate",
+    # "CostItemUpdate",
+    # "CostItemResponse",
 
     # WhatsApp models
-    "WhatsAppMessageCreate",
-    "WhatsAppMessageResponse",
-    "SendMessageRequest",
-    "WhatsAppContactResponse",
+    # "WhatsAppMessageCreate",
+    # "WhatsAppMessageResponse",
+    # "SendMessageRequest",
+    # "WhatsAppContactResponse",
 
     # AI models
-    "AIMessageAnalysisRequest",
-    "AIAnalysisResponse",
-    "AIResponseSuggestion",
-    "AIInsightsResponse",
+    # "AIMessageAnalysisRequest",
+    # "AIAnalysisResponse",
+    # "AIResponseSuggestion",
+    # "AIInsightsResponse",
 ]
