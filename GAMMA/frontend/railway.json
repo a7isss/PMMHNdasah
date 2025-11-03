@@ -6,5 +6,15 @@
     "startCommand": "npm start",
     "healthcheckPath": "/",
     "healthcheckTimeout": 300
+  },
+  "nixpacks": {
+    "plan": {
+      "providers": [
+        {
+          "name": "node",
+          "version": "20"
+        }
+      ]
+    }
   }
 }
