@@ -79,10 +79,12 @@
 ```bash
 # In Railway dashboard:
 # 1. Click "Add Service" → "GitHub"
-# 2. Select your repository
-# 3. Set root directory to: backend/
+# 2. Select your repository: a7isss/PMMHNdasah
+# 3. ⚠️ IMPORTANT: Set "Root Directory" to: GAMMA/BACKEND
 # 4. Configure build settings
 ```
+
+**🚨 CRITICAL: Set Root Directory to `GAMMA/BACKEND`** (not just `backend/`)
 
 #### **Railway Configuration for Backend:**
 
@@ -145,10 +147,12 @@ ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
 ```bash
 # In Railway dashboard:
 # 1. Click "Add Service" → "GitHub"
-# 2. Select your repository
-# 3. Set root directory to: frontend/
+# 2. Select your repository: a7isss/PMMHNdasah
+# 3. ⚠️ IMPORTANT: Set "Root Directory" to: GAMMA/frontend
 # 4. Configure build settings
 ```
+
+**🚨 CRITICAL: Set Root Directory to `GAMMA/frontend`** (not just `frontend/`)
 
 #### **Railway Configuration for Frontend:**
 

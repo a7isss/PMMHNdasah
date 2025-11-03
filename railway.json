@@ -1,0 +1,10 @@
+{
+  "build": {
+    "builder": "NIXPACKS"
+  },
+  "deploy": {
+    "startCommand": "echo 'This is a monorepo. Deploy individual services from GAMMA/backend/ and GAMMA/frontend/'",
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 10
+  }
+}
