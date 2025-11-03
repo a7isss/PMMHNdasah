@@ -65,6 +65,21 @@ export default function Dashboard() {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Navigation for SuperAdmins */}
+      {user?.role === 'super_admin' && (
+        <Box sx={{ mb: 3 }}>
+          <Button
+            variant="contained"
+            color="secondary"
+            component={Link}
+            href="/admin"
+            sx={{ mr: 2 }}
+          >
+            Super Admin Dashboard
+          </Button>
+        </Box>
+      )}
+
       {/* Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom fontWeight="bold">

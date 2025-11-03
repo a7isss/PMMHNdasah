@@ -5,7 +5,7 @@ interface User {
   email: string;
   firstName?: string;
   lastName?: string;
-  role: 'portfolio_manager' | 'project_manager' | 'procurement_manager' | 'engineer';
+  role: 'super_admin' | 'portfolio_manager' | 'project_manager' | 'procurement_manager' | 'engineer';
   tenantId: string;
   phone?: string;
   whatsappEnabled?: boolean;

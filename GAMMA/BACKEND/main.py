@@ -14,7 +14,7 @@ from typing import Callable
 
 from config import settings
 from database import create_tables, get_db
-from routers import auth, projects, tasks, costs, whatsapp, ai
+from routers import auth, projects, tasks, costs, whatsapp, ai, admin
 from middleware.tenant_middleware import TenantMiddleware
 from middleware.auth_middleware import AuthMiddleware
 from services.ai_service import AIService
@@ -195,6 +195,12 @@ app.include_router(
     ai.router,
     prefix="/api/v1/ai",
     tags=["AI Services"]
+)
+
+app.include_router(
+    admin.router,
+    prefix="/api/v1",
+    tags=["Admin"]
 )
 
 # WebSocket endpoint for real-time features
