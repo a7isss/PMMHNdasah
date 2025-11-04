@@ -127,9 +127,14 @@ class Settings(BaseSettings):
 
     @validator("DATABASE_URL")
     def validate_database_url(cls, v):
-        """Validate database URL format."""
+        """Validate database URL format and ensure asyncpg driver."""
         if not v.startswith(("postgresql://", "postgresql+asyncpg://")):
             raise ValueError("Database URL must be a valid PostgreSQL connection string")
+
+        # Ensure we use asyncpg driver for Railway compatibility
+        if v.startswith("postgresql://") and not v.startswith("postgresql+asyncpg://"):
+            v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+
         return v
 
     @validator("JWT_SECRET_KEY")
