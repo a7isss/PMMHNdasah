@@ -9,8 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete, func
 import structlog
 
-from database import get_db
-from models.user import UserResponse, UserUpdate, UserCreate, TenantCreate, TenantResponse
+from ..database import get_db
+from ..models.user import UserResponse, UserUpdate, UserCreate, TenantCreate, TenantResponse
 from schemas.user import User, Tenant
 from routers.auth import get_current_super_admin_user
 
@@ -675,3 +675,4 @@ async def get_admin_stats(
             "last_updated": datetime.utcnow()
         }
     }
+

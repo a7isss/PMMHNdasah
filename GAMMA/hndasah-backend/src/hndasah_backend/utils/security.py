@@ -10,7 +10,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 import structlog
 
-from config import settings
+from ..config import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -216,3 +216,4 @@ def create_session_fingerprint(request) -> str:
 
     fingerprint_string = "|".join(fingerprint_data)
     return hash_sensitive_data(fingerprint_string)
+

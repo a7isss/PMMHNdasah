@@ -9,7 +9,7 @@ from email.mime.multipart import MIMEMultipart
 from typing import Optional, Dict, Any
 import structlog
 from jinja2 import Template
-from config import settings
+from ..config import settings
 
 logger = structlog.get_logger(__name__)
 
@@ -274,3 +274,4 @@ email_service = EmailService()
 async def send_password_reset_email(to_email: str, reset_token: str) -> bool:
     """Send password reset email (convenience function)."""
     return await email_service.send_password_reset_email(to_email, reset_token)
+

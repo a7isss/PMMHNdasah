@@ -10,8 +10,8 @@ from typing import List, Optional, Dict, Any
 from uuid import UUID
 from datetime import date, datetime, timedelta
 
-from database import get_db
-from models.sqlalchemy.task import Task, TaskComment, TaskDependency, TaskTemplate
+from ..database import get_db
+from ..models.sqlalchemy.task import Task, TaskComment, TaskDependency, TaskTemplate
 from models.sqlalchemy.project import Project
 from models.sqlalchemy.user import User
 from schemas.task import (
@@ -2278,3 +2278,4 @@ async def reschedule_notifications(
         "message": f"Rescheduled {len(new_notifications)} notifications",
         "notifications": [n.dict() for n in new_notifications]
     }
+

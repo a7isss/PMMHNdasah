@@ -226,3 +226,4 @@ class ProjectSearchFilters(BaseModel):
     budget_max: Optional[Decimal] = Field(None, ge=0)
     tags: Optional[List[str]] = Field(None)
     search_query: Optional[str] = Field(None, description="Full-text search query")
+

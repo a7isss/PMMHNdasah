@@ -200,3 +200,4 @@ class UserTenantInfo(BaseModel):
     tenant: TenantResponse
     permissions: List[str] = Field(..., description="User permissions")
     features: List[str] = Field(..., description="Enabled features for tenant")
+

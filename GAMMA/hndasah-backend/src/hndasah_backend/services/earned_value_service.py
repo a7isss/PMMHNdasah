@@ -485,3 +485,4 @@ class EarnedValueService:
             risks.append("Early stage performance risk - poor initial performance trends")
 
         return risks if risks else ["No significant risks identified based on current EVM metrics"]
+

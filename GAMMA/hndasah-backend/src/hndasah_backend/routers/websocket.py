@@ -170,3 +170,4 @@ async def handle_websocket_message(message: dict, websocket: WebSocket, tenant_i
 
 # Export the router
 ws_router = router
+

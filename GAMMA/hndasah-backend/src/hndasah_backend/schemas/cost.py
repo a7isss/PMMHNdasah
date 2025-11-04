@@ -338,3 +338,4 @@ class CostCommentResponse(BaseModel):
 
     class Config:
         from_attributes = True
+

@@ -390,3 +390,4 @@ class WhatsAppAPIError(BaseModel):
     message_id: Optional[str] = Field(None, description="Related message ID")
     contact_id: Optional[UUID] = Field(None, description="Related contact ID")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Error timestamp")
+

@@ -789,3 +789,4 @@ class ReportingService:
         story.append(Spacer(1, 20))
 
         return story
+

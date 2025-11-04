@@ -7,17 +7,17 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from uuid import uuid4
 import structlog
-from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table
+from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 
-from database import Base
-from schemas.base import BaseModel
+from ...database import Base
+from ...schemas.base import BaseModel
 
 logger = structlog.get_logger(__name__)
 
 
-class WhatsAppContact(Base, BaseModel):
+class WhatsAppContact(BaseModel):
     """WhatsApp contact model for managing business contacts."""
 
     __tablename__ = "whatsapp_contacts"
@@ -131,7 +131,7 @@ class WhatsAppContact(Base, BaseModel):
         }
 
 
-class WhatsAppMessage(Base, BaseModel):
+class WhatsAppMessage(BaseModel):
     """WhatsApp message model with AI processing capabilities."""
 
     __tablename__ = "whatsapp_messages"
@@ -172,12 +172,6 @@ class WhatsAppMessage(Base, BaseModel):
     read_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
     error_message: Mapped[Optional[str]] = mapped_column(Text)
 
-    # Search & AI
-    search_vector: Mapped[Any] = mapped_column(
-        text,
-        server_default=text("to_tsvector('english', coalesce(content, ''))"),
-        index=True
-    )
     embedding: Mapped[Optional[List[float]]] = mapped_column(JSONB, nullable=True)  # Vector embeddings stored as JSONB for now
 
     # Relationships
@@ -192,8 +186,8 @@ class WhatsAppMessage(Base, BaseModel):
         text("CHECK (message_type IN ('text', 'image', 'video', 'audio', 'document', 'location', 'contact'))"),
         text("CHECK (urgency_level IN ('low', 'medium', 'high', 'critical'))"),
         text("CHECK (delivery_status IN ('sent', 'delivered', 'read', 'failed'))"),
-        text("CHECK (sentiment_score >= -1 AND sentiment_score <= 1 OR sentiment_score IS NULL)"),
-        text("CHECK (confidence_score >= 0 AND confidence_score <= 1 OR confidence_score IS NULL)"),
+        CheckConstraint("sentiment_score >= -1 AND sentiment_score <= 1 OR sentiment_score IS NULL"),
+        CheckConstraint("confidence_score >= 0 AND confidence_score <= 1 OR confidence_score IS NULL"),
     )
 
     def get_message_length(self) -> int:
@@ -241,7 +235,7 @@ class WhatsAppMessage(Base, BaseModel):
         return []
 
 
-class WhatsAppAutoResponse(Base, BaseModel):
+class WhatsAppAutoResponse(BaseModel):
     """WhatsApp auto-response rules model."""
 
     __tablename__ = "whatsapp_auto_responses"
@@ -260,8 +254,8 @@ class WhatsAppAutoResponse(Base, BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (priority >= 1)"),
-        text("CHECK (usage_count >= 0)"),
+        CheckConstraint("priority >= 1"),
+        CheckConstraint("usage_count >= 0"),
     )
 
     def matches_message(self, message: WhatsAppMessage) -> bool:
@@ -297,7 +291,7 @@ class WhatsAppAutoResponse(Base, BaseModel):
         return response
 
 
-class WhatsAppIntegrationSettings(Base, BaseModel):
+class WhatsAppIntegrationSettings(BaseModel):
     """WhatsApp integration settings model."""
 
     __tablename__ = "whatsapp_integration_settings"
@@ -319,7 +313,7 @@ class WhatsAppIntegrationSettings(Base, BaseModel):
     webhook_failure_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
 
-class WhatsAppMessageTemplate(Base, BaseModel):
+class WhatsAppMessageTemplate(BaseModel):
     """WhatsApp message template model."""
 
     __tablename__ = "whatsapp_message_templates"
@@ -339,7 +333,7 @@ class WhatsAppMessageTemplate(Base, BaseModel):
     # Constraints
     __table_args__ = (
         text("CHECK (approval_status IN ('draft', 'submitted', 'approved', 'rejected'))"),
-        text("CHECK (usage_count >= 0)"),
+        CheckConstraint("usage_count >= 0"),
     )
 
     def validate_variables(self, provided_vars: Dict[str, Any]) -> List[str]:
@@ -359,7 +353,7 @@ class WhatsAppMessageTemplate(Base, BaseModel):
         return content
 
 
-class WhatsAppConversation(Base, BaseModel):
+class WhatsAppConversation(BaseModel):
     """WhatsApp conversation thread model."""
 
     __tablename__ = "whatsapp_conversations"
@@ -383,7 +377,7 @@ class WhatsAppConversation(Base, BaseModel):
     __table_args__ = (
         text("CHECK (status IN ('active', 'closed', 'archived'))"),
         text("CHECK (priority IN ('low', 'normal', 'high', 'urgent'))"),
-        text("CHECK (sentiment_trend >= -1 AND sentiment_trend <= 1 OR sentiment_trend IS NULL)"),
+        CheckConstraint("sentiment_trend >= -1 AND sentiment_trend <= 1 OR sentiment_trend IS NULL"),
     )
 
     def get_duration_hours(self) -> float:
@@ -415,7 +409,7 @@ class WhatsAppConversation(Base, BaseModel):
         return False
 
 
-class WhatsAppWebhookLog(Base, BaseModel):
+class WhatsAppWebhookLog(BaseModel):
     """WhatsApp webhook processing log."""
 
     __tablename__ = "whatsapp_webhook_logs"
@@ -430,6 +424,9 @@ class WhatsAppWebhookLog(Base, BaseModel):
     # Constraints
     __table_args__ = (
         text("CHECK (processing_status IN ('received', 'processing', 'completed', 'failed'))"),
-        text("CHECK (processing_time_ms >= 0 OR processing_time_ms IS NULL)"),
-        text("CHECK (messages_processed >= 0)"),
+        CheckConstraint("processing_time_ms >= 0 OR processing_time_ms IS NULL"),
+        CheckConstraint("messages_processed >= 0"),
     )
+
+
+

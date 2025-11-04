@@ -11,17 +11,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 import structlog
 
-from config import settings
-from database import get_db
-from models.user import (
+from ..config import settings
+from ..database import get_db
+from ..models.user import (
     UserCreate, UserUpdate, UserResponse, UserLogin,
     TokenResponse, PasswordResetRequest, PasswordResetConfirm,
     TenantCreate, TenantResponse
 )
-from schemas.user import User, Tenant
-from services.auth_service import AuthService
-from utils.security import get_password_hash, verify_password, create_access_token
-from utils.email import send_password_reset_email
+from ..schemas.user import User, Tenant
+from ..services.auth_service import AuthService
+from ..utils.security import get_password_hash, verify_password, create_access_token
+from ..utils.email import send_password_reset_email
 
 logger = structlog.get_logger(__name__)
 
@@ -412,3 +412,4 @@ async def get_tenant(
         )
 
     return TenantResponse.from_orm(tenant)
+

@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from database import Base
+from ..database import Base
 
 logger = structlog.get_logger(__name__)
 
@@ -251,3 +251,4 @@ def generate_uuid() -> str:
 def utc_now() -> datetime:
     """Get current UTC datetime."""
     return datetime.utcnow()
+

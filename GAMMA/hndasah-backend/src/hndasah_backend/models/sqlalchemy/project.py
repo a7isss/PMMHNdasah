@@ -7,19 +7,24 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from uuid import uuid4
 import structlog
-from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table
+from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table, CheckConstraint, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
-from geoalchemy2 import Geography
+try:
+    from geoalchemy2 import Geography
+    HAS_GEOALCHEMY2 = True
+except ImportError:
+    Geography = None
+    HAS_GEOALCHEMY2 = False
 from sqlalchemy.ext.hybrid import hybrid_property
 
-from database import Base
-from schemas.base import BaseModel
+from ...database import Base
+from ...schemas.base import BaseModel
 
 logger = structlog.get_logger(__name__)
 
 
-class Project(Base, BaseModel):
+class Project(BaseModel):
     """Project model with AI integration and vector embeddings."""
 
     __tablename__ = "projects"
@@ -31,8 +36,8 @@ class Project(Base, BaseModel):
     project_number: Mapped[Optional[str]] = mapped_column(String(50), unique=True)
     contract_type: Mapped[str] = mapped_column(String(50), nullable=False, default="lump_sum")
 
-    # Location with PostGIS
-    location: Mapped[Optional[Any]] = mapped_column(Geography(geometry_type='POINT', srid=4326))
+    # Location with PostGIS (optional - falls back to JSONB if geoalchemy2 not available)
+    location: Mapped[Optional[Any]] = mapped_column(JSONB)
     address: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB)
 
     # Schedule
@@ -59,11 +64,6 @@ class Project(Base, BaseModel):
     ai_insights: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
     risk_predictions: Mapped[List[Dict[str, Any]]] = mapped_column(JSONB, default=list)
     embedding: Mapped[Optional[List[float]]] = mapped_column(JSONB, nullable=True)  # Vector embeddings stored as JSONB for now
-    search_vector: Mapped[Any] = mapped_column(
-        text,
-        server_default=text("to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, ''))"),
-        index=True
-    )
 
     # Metadata
     tags: Mapped[List[str]] = mapped_column(ARRAY(String), default=list)
@@ -100,12 +100,12 @@ class Project(Base, BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (end_date >= start_date)"),
-        text("CHECK (actual_end_date >= actual_start_date OR actual_end_date IS NULL)"),
-        text("CHECK (status IN ('planning', 'active', 'on_hold', 'completed', 'cancelled'))"),
-        text("CHECK (contract_type IN ('lump_sum', 'cost_plus', 'time_materials', 'unit_price'))"),
-        text("CHECK (risk_level IN ('low', 'medium', 'high', 'critical'))"),
-        text("CHECK (progress_percentage >= 0 AND progress_percentage <= 100)"),
+        CheckConstraint("end_date >= start_date", name="check_end_date_after_start"),
+        CheckConstraint("actual_end_date >= actual_start_date OR actual_end_date IS NULL", name="check_actual_dates"),
+        CheckConstraint("status IN ('planning', 'active', 'on_hold', 'completed', 'cancelled')", name="check_status_valid"),
+        CheckConstraint("contract_type IN ('lump_sum', 'cost_plus', 'time_materials', 'unit_price')", name="check_contract_type_valid"),
+        CheckConstraint("risk_level IN ('low', 'medium', 'high', 'critical')", name="check_risk_level_valid"),
+        CheckConstraint("progress_percentage >= 0 AND progress_percentage <= 100", name="check_progress_percentage_range"),
     )
 
     @hybrid_property
@@ -241,7 +241,7 @@ class Project(Base, BaseModel):
         }
 
 
-class ProjectMember(Base, BaseModel):
+class ProjectMember(BaseModel):
     """Project member model for team management."""
 
     __tablename__ = "project_members"
@@ -279,9 +279,9 @@ class ProjectMember(Base, BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (role IN ('owner', 'manager', 'lead', 'member', 'viewer'))"),
-        text("CHECK (capacity_percentage >= 0 AND capacity_percentage <= 100)"),
-        text("UNIQUE (project_id, user_id)"),
+        CheckConstraint("role IN ('owner', 'manager', 'lead', 'member', 'viewer')", name="check_role_valid"),
+        CheckConstraint("capacity_percentage >= 0 AND capacity_percentage <= 100", name="check_capacity_percentage_range"),
+        UniqueConstraint("project_id", "user_id", name="unique_project_user"),
     )
 
     def get_active_tasks_count(self) -> int:
@@ -323,3 +323,4 @@ class ProjectMember(Base, BaseModel):
         required_permission = f"{action}_{resource_type}"
 
         return required_permission in user_permissions or action in user_permissions
+

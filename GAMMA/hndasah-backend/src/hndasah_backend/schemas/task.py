@@ -592,3 +592,4 @@ class NotificationSchedule(BaseModel):
     scheduled_time: datetime = Field(..., description="When to send notification")
     status: str = Field("pending", description="Schedule status")
     retry_count: int = Field(0, description="Number of retry attempts")
+

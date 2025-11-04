@@ -8,7 +8,7 @@ import structlog
 from structlog import WriteLoggerFactory
 from structlog.processors import JSONRenderer, TimeStamper
 from structlog.dev import ConsoleRenderer
-from config import settings
+from ..config import settings
 
 
 def setup_logging():
@@ -98,3 +98,4 @@ def get_logger(name: str) -> structlog.BoundLoggerBase:
 
 # Global logger instance
 logger = get_logger(__name__)
+

@@ -726,3 +726,4 @@ class TaskService:
 
         result = await db.execute(query)
         return {str(row[0]): row[1] for row in result.all()}
+

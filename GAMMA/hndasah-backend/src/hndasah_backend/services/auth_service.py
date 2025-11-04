@@ -9,9 +9,9 @@ import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from config import settings
-from schemas.user import User
-from utils.security import (
+from ..config import settings
+from ..schemas.user import User
+from ..utils.security import (
     create_access_token,
     create_refresh_token,
     decode_token,
@@ -266,3 +266,4 @@ class AuthService:
     async def cleanup(self):
         """Cleanup auth service resources."""
         logger.info("Auth service cleaned up")
+

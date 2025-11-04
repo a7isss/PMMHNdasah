@@ -57,3 +57,4 @@ class AIService:
         # TODO: Implement insight generation
         logger.info("Generating project insights", project_id=project_id)
         return {"insights": []}
+

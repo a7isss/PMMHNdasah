@@ -7,17 +7,17 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from uuid import uuid4
 import structlog
-from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table
+from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 
-from database import Base
-from schemas.base import BaseModel
+from ...database import Base
+from ...schemas.base import BaseModel
 
 logger = structlog.get_logger(__name__)
 
 
-class Task(Base, BaseModel):
+class Task(BaseModel):
     """Task model with AI integration and scheduling."""
 
     __tablename__ = "tasks"
@@ -68,11 +68,6 @@ class Task(Base, BaseModel):
     ai_risk_score: Mapped[Optional[DECIMAL]] = mapped_column(DECIMAL(3, 2))
     ai_insights: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
     embedding: Mapped[Optional[List[float]]] = mapped_column(JSONB, nullable=True)  # Vector embeddings stored as JSONB for now
-    search_vector: Mapped[Any] = mapped_column(
-        text,
-        server_default=text("to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, ''))"),
-        index=True
-    )
 
     # Metadata
     tags: Mapped[List[str]] = mapped_column(ARRAY(String), default=list)
@@ -93,13 +88,13 @@ class Task(Base, BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (planned_end_date >= planned_start_date OR planned_end_date IS NULL)"),
-        text("CHECK (actual_end_date >= actual_start_date OR actual_end_date IS NULL)"),
+        CheckConstraint("planned_end_date >= planned_start_date OR planned_end_date IS NULL"),
+        CheckConstraint("actual_end_date >= actual_start_date OR actual_end_date IS NULL"),
         text("CHECK (status IN ('not_started', 'in_progress', 'completed', 'on_hold', 'cancelled'))"),
-        text("CHECK (progress_percentage >= 0 AND progress_percentage <= 100)"),
-        text("CHECK (level >= 1)"),
-        text("CHECK (ai_priority_score >= 0 AND ai_priority_score <= 1 OR ai_priority_score IS NULL)"),
-        text("CHECK (ai_risk_score >= 0 AND ai_risk_score <= 1 OR ai_risk_score IS NULL)"),
+        CheckConstraint("progress_percentage >= 0 AND progress_percentage <= 100"),
+        CheckConstraint("level >= 1"),
+        CheckConstraint("ai_priority_score >= 0 AND ai_priority_score <= 1 OR ai_priority_score IS NULL"),
+        CheckConstraint("ai_risk_score >= 0 AND ai_risk_score <= 1 OR ai_risk_score IS NULL"),
     )
 
     def get_duration_days(self) -> int:
@@ -216,7 +211,7 @@ class Task(Base, BaseModel):
         }
 
 
-class TaskComment(Base, BaseModel):
+class TaskComment(BaseModel):
     """Task comment model for notes and updates."""
 
     __tablename__ = "task_comments"
@@ -236,7 +231,7 @@ class TaskComment(Base, BaseModel):
     )
 
 
-class TaskDependency(Base, BaseModel):
+class TaskDependency(BaseModel):
     """Task dependency model for CPM calculations."""
 
     __tablename__ = "task_dependencies"
@@ -253,11 +248,11 @@ class TaskDependency(Base, BaseModel):
     # Constraints
     __table_args__ = (
         text("CHECK (dependency_type IN ('finish_to_start', 'start_to_start', 'finish_to_finish', 'start_to_finish'))"),
-        text("CHECK (predecessor_id != successor_id)"),
+        CheckConstraint("predecessor_id != successor_id"),
     )
 
 
-class TaskTemplate(Base, BaseModel):
+class TaskTemplate(BaseModel):
     """Task template model for standardized tasks."""
 
     __tablename__ = "task_templates"
@@ -278,6 +273,9 @@ class TaskTemplate(Base, BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (estimated_duration_days > 0)"),
-        text("CHECK (estimated_hours >= 0)"),
+        CheckConstraint("estimated_duration_days > 0"),
+        CheckConstraint("estimated_hours >= 0"),
     )
+
+
+

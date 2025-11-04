@@ -130,8 +130,8 @@ class AuthMiddleware(BaseHTTPMiddleware):
         """Get user from database with validation."""
         try:
             # Import here to avoid circular imports
-            from database import get_db
-            from schemas.user import User
+            from ..database import get_db
+            from ..schemas.user import User
             from sqlalchemy import select
 
             async with get_db() as db:
@@ -225,3 +225,4 @@ class AuthContext:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Clean up authentication context."""
         pass
+

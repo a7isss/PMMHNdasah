@@ -7,17 +7,17 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from uuid import uuid4
 import structlog
-from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table
+from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table, CheckConstraint
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 
-from database import Base
-from schemas.base import BaseModel
+from ...database import Base
+from ...schemas.base import BaseModel
 
 logger = structlog.get_logger(__name__)
 
 
-class CostItem(Base, BaseModel):
+class CostItem(BaseModel):
     """Cost item model with AI categorization and approval workflow."""
 
     __tablename__ = "cost_items"
@@ -59,11 +59,6 @@ class CostItem(Base, BaseModel):
     ai_risk_score: Mapped[Optional[DECIMAL]] = mapped_column(DECIMAL(3, 2))
     ai_insights: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
     embedding: Mapped[Optional[List[float]]] = mapped_column(JSONB, nullable=True)  # Vector embeddings stored as JSONB for now
-    search_vector: Mapped[Any] = mapped_column(
-        text,
-        server_default=text("to_tsvector('english', coalesce(name, '') || ' ' || coalesce(description, ''))"),
-        index=True
-    )
 
     # Metadata
     tags: Mapped[List[str]] = mapped_column(ARRAY(String), default=list)
@@ -83,9 +78,9 @@ class CostItem(Base, BaseModel):
     # Constraints
     __table_args__ = (
         text("CHECK (status IN ('planned', 'committed', 'approved', 'incurred', 'paid'))"),
-        text("CHECK (actual_amount >= 0)"),
-        text("CHECK (budgeted_amount >= 0)"),
-        text("CHECK (ai_risk_score >= 0 AND ai_risk_score <= 1 OR ai_risk_score IS NULL)"),
+        CheckConstraint("actual_amount >= 0"),
+        CheckConstraint("budgeted_amount >= 0"),
+        CheckConstraint("ai_risk_score >= 0 AND ai_risk_score <= 1 OR ai_risk_score IS NULL"),
     )
 
     def get_variance_amount(self) -> float:
@@ -157,7 +152,7 @@ class CostItem(Base, BaseModel):
         return {"status": "pending_approval", "approved": False}
 
 
-class BillOfQuantities(Base, BaseModel):
+class BillOfQuantities(BaseModel):
     """Bill of Quantities model for project estimation."""
 
     __tablename__ = "bill_of_quantities"
@@ -181,7 +176,7 @@ class BillOfQuantities(Base, BaseModel):
     # Constraints
     __table_args__ = (
         text("CHECK (approval_status IN ('draft', 'submitted', 'approved', 'rejected'))"),
-        text("CHECK (total_amount >= 0)"),
+        CheckConstraint("total_amount >= 0"),
     )
 
     def calculate_total_amount(self) -> float:
@@ -218,7 +213,7 @@ class BillOfQuantities(Base, BaseModel):
         return categories
 
 
-class CostComment(Base, BaseModel):
+class CostComment(BaseModel):
     """Cost comment model for approval notes and updates."""
 
     __tablename__ = "cost_comments"
@@ -238,7 +233,7 @@ class CostComment(Base, BaseModel):
     )
 
 
-class CostApprovalWorkflow(Base, BaseModel):
+class CostApprovalWorkflow(BaseModel):
     """Cost approval workflow model."""
 
     __tablename__ = "cost_approval_workflows"
@@ -260,11 +255,11 @@ class CostApprovalWorkflow(Base, BaseModel):
     __table_args__ = (
         text("CHECK (approval_level IN ('manager', 'senior_manager', 'director', 'cfo'))"),
         text("CHECK (approval_status IN ('pending', 'approved', 'rejected'))"),
-        text("CHECK (approval_limit >= 0)"),
+        CheckConstraint("approval_limit >= 0"),
     )
 
 
-class VendorContract(Base, BaseModel):
+class VendorContract(BaseModel):
     """Vendor contract information model."""
 
     __tablename__ = "vendor_contracts"
@@ -286,12 +281,12 @@ class VendorContract(Base, BaseModel):
     # Constraints
     __table_args__ = (
         text("CHECK (contract_type IN ('supply', 'service', 'subcontract'))"),
-        text("CHECK (end_date >= start_date)"),
-        text("CHECK (total_value >= 0)"),
+        CheckConstraint("end_date >= start_date"),
+        CheckConstraint("total_value >= 0"),
     )
 
 
-class CostTemplate(Base, BaseModel):
+class CostTemplate(BaseModel):
     """Cost template model for standardized cost items."""
 
     __tablename__ = "cost_templates"
@@ -310,5 +305,8 @@ class CostTemplate(Base, BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (typical_amount >= 0)"),
+        CheckConstraint("typical_amount >= 0"),
     )
+
+
+

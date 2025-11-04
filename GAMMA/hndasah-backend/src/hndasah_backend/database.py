@@ -129,6 +129,20 @@ async def get_redis() -> Optional[redis.Redis]:
 async def health_check_database() -> dict:
     """Check database health and connectivity."""
     try:
+        # Check if database is initialized
+        if not async_session_maker:
+            # Try to initialize database
+            try:
+                await init_database()
+            except Exception as init_error:
+                logger.warning("Database initialization failed during health check", error=str(init_error))
+                return {
+                    "status": "not_configured",
+                    "database": "not_initialized",
+                    "error": str(init_error),
+                    "type": "postgresql"
+                }
+
         async with get_db() as session:
             # Simple query to test connection
             result = await session.execute(text("SELECT 1 as health_check"))
@@ -148,7 +162,7 @@ async def health_check_database() -> dict:
                 }
 
     except Exception as e:
-        logger.error("Database health check failed", error=str(e))
+        logger.warning("Database health check failed", error=str(e))
         return {
             "status": "unhealthy",
             "database": "disconnected",
@@ -255,3 +269,4 @@ __all__ = [
     "cleanup",
     "Base"
 ]
+

@@ -664,3 +664,4 @@ class AdvancedSchedulingService:
 
         except Exception as e:
             logger.warning("Failed to apply constraint", constraint=constraint.constraint_type, error=str(e))
+

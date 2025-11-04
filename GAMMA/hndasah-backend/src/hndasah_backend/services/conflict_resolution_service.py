@@ -464,3 +464,4 @@ class ConflictResolutionService:
         stats["most_affected_tasks"] = [{"task_id": tid, "conflict_count": count} for tid, count in most_affected]
 
         return stats
+

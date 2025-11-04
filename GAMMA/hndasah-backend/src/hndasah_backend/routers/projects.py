@@ -11,8 +11,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete, func, text, or_, and_
 from sqlalchemy.orm import selectinload, joinedload
 
-from database import get_db
-from models.sqlalchemy import Project, ProjectMember, Task, CostItem, WhatsAppMessage, User
+from ..database import get_db
+from ..models.sqlalchemy import Project, ProjectMember, Task, CostItem, WhatsAppMessage, User
 from schemas.project import (
     ProjectCreate, ProjectUpdate, ProjectResponse, ProjectMemberCreate,
     ProjectMemberUpdate, ProjectMemberResponse, ProjectDashboard,
@@ -682,3 +682,4 @@ async def generate_project_insights(
     background_tasks.add_task(ai_service.generate_project_insights, project, db)
 
     return {"message": "AI analysis started", "project_id": project_id}
+

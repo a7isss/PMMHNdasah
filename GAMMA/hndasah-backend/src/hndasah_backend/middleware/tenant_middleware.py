@@ -119,8 +119,8 @@ class TenantMiddleware(BaseHTTPMiddleware):
         """Validate that tenant exists and is active."""
         try:
             # Import here to avoid circular imports
-            from database import get_db
-            from schemas.user import Tenant
+            from ..database import get_db
+            from ..schemas.user import Tenant
             from sqlalchemy import select
 
             async with get_db() as db:
@@ -181,3 +181,4 @@ def require_tenant(func):
         return await func(*args, **kwargs)
 
     return wrapper
+

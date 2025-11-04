@@ -462,3 +462,4 @@ class DependencyValidationService:
                 })
 
         return suggestions
+

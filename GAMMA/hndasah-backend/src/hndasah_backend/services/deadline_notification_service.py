@@ -493,3 +493,4 @@ class DeadlineNotificationService:
                 "due_this_week": 0,
                 "upcoming_deadlines": []
             }
+
