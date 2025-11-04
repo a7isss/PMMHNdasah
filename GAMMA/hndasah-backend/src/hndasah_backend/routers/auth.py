@@ -395,6 +395,100 @@ async def list_tenants(
     return [TenantResponse.from_orm(tenant) for tenant in tenants]
 
 
+@router.post("/superadmin/login", response_model=TokenResponse)
+async def superadmin_login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Superadmin login using environment variables.
+
+    This endpoint allows superadmin login using credentials stored in environment variables,
+    bypassing normal user authentication for administrative access.
+    """
+    import os
+
+    # Get superadmin credentials from environment variables
+    superadmin_email = os.getenv("SUPERADMIN_EMAIL")
+    superadmin_password = os.getenv("SUPERADMIN_PASSWORD")
+
+    # Check if superadmin credentials are configured
+    if not superadmin_email or not superadmin_password:
+        logger.warning("Superadmin login attempted but credentials not configured")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Superadmin access not configured"
+        )
+
+    # Validate credentials against environment variables
+    if form_data.username != superadmin_email or form_data.password != superadmin_password:
+        logger.warning("Superadmin login failed - invalid credentials", email=form_data.username)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid superadmin credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Check if superadmin user exists in database, create if not
+    result = await db.execute(
+        select(User).where(User.email == superadmin_email)
+    )
+    user = result.scalar_one_or_none()
+
+    if not user:
+        # Create superadmin user if it doesn't exist
+        from ..utils.security import get_password_hash
+        from datetime import datetime
+
+        superadmin_user = User(
+            email=superadmin_email,
+            password_hash=get_password_hash(superadmin_password),
+            first_name="Super",
+            last_name="Admin",
+            role="super_admin",
+            is_active=True,
+            is_email_verified=True,
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow()
+        )
+
+        db.add(superadmin_user)
+        await db.commit()
+        await db.refresh(superadmin_user)
+        user = superadmin_user
+
+        logger.info("Superadmin user created", email=superadmin_email)
+
+    # Update last login
+    from datetime import datetime
+    await db.execute(
+        update(User)
+        .where(User.id == user.id)
+        .values(last_login_at=datetime.utcnow())
+    )
+    await db.commit()
+
+    # Create access token
+    access_token = auth_service.create_access_token({
+        "sub": user.email,
+        "user_id": str(user.id),
+        "role": user.role,
+        "superadmin": True  # Mark as superadmin token
+    })
+
+    # Calculate token expiration
+    expires_in = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+
+    logger.info("Superadmin login successful", email=user.email)
+
+    return TokenResponse(
+        access_token=access_token,
+        token_type="bearer",
+        expires_in=expires_in,
+        user=UserResponse.from_orm(user)
+    )
+
+
 @router.get("/tenants/{tenant_id}", response_model=TenantResponse)
 async def get_tenant(
     tenant_id: str,
