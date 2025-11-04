@@ -33,10 +33,30 @@ async def init_database():
     """Initialize database connection and create tables."""
     global engine, async_session_maker
 
+    print("🔄 Initializing database connection...")
+
     try:
+        # Log database URL (safely)
+        db_url = settings.DATABASE_URL
+        if '@' in db_url:
+            # Hide password in logs
+            user_part, rest = db_url.split('@', 1)
+            safe_url = f"{user_part.split(':')[0]}:***@{rest}"
+        else:
+            safe_url = db_url
+        print(f"📋 Database URL: {safe_url}")
+
         # Create async engine
         db_config = settings.get_database_config()
+        print(f"⚙️  Database config: {db_config}")
+
         engine = create_async_engine(**db_config)
+        print("✅ Database engine created")
+
+        # Test connection
+        async with engine.begin() as conn:
+            await conn.execute(text("SELECT 1"))
+        print("✅ Database connection test successful")
 
         # Create session maker
         async_session_maker = async_sessionmaker(
@@ -44,10 +64,15 @@ async def init_database():
             class_=AsyncSession,
             expire_on_commit=False
         )
+        print("✅ Database session maker created")
 
-        logger.info("Database engine initialized", url=settings.DATABASE_URL.split('@')[1] if '@' in settings.DATABASE_URL else "unknown")
+        logger.info("Database engine initialized", url=safe_url)
 
     except Exception as e:
+        print(f"❌ Failed to initialize database: {str(e)}")
+        print(f"❌ Error type: {type(e).__name__}")
+        import traceback
+        traceback.print_exc()
         logger.error("Failed to initialize database", error=str(e))
         raise
 
@@ -67,20 +92,42 @@ async def close_database():
 
 async def create_tables():
     """Create all database tables if they don't exist."""
-    try:
-        async with engine.begin() as conn:
-            # Enable required extensions
-            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"))
-            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS \"pgvector\";"))
-            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS \"postgis\";"))
-            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS \"pg_cron\";"))
+    print("🔄 Creating database tables...")
 
+    try:
+        # Ensure database is initialized
+        if not engine:
+            print("⚠️  Database engine not initialized, initializing now...")
+            await init_database()
+
+        if not engine:
+            raise RuntimeError("Database engine could not be initialized")
+
+        async with engine.begin() as conn:
+            print("📦 Enabling PostgreSQL extensions...")
+
+            # Enable required extensions (with error handling for each)
+            extensions = ["uuid-ossp", "pgvector", "postgis", "pg_cron"]
+            for ext in extensions:
+                try:
+                    await conn.execute(text(f'CREATE EXTENSION IF NOT EXISTS "{ext}";'))
+                    print(f"✅ Extension {ext} enabled")
+                except Exception as ext_error:
+                    print(f"⚠️  Failed to enable extension {ext}: {ext_error}")
+                    # Continue with other extensions
+
+            print("📋 Creating database tables...")
             # Create tables
             await conn.run_sync(Base.metadata.create_all)
+            print("✅ Database tables created successfully")
 
         logger.info("Database tables created successfully")
 
     except Exception as e:
+        print(f"❌ Failed to create database tables: {str(e)}")
+        print(f"❌ Error type: {type(e).__name__}")
+        import traceback
+        traceback.print_exc()
         logger.error("Failed to create database tables", error=str(e))
         raise
 
@@ -269,4 +316,3 @@ __all__ = [
     "cleanup",
     "Base"
 ]
-

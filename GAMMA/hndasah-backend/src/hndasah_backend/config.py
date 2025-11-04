@@ -152,13 +152,15 @@ class Settings(BaseSettings):
 
     def get_redis_config(self) -> dict:
         """Get Redis configuration."""
-        return {
-            "url": self.REDIS_URL,
+        config = {
             "decode_responses": True,
             "socket_connect_timeout": 5,
             "socket_timeout": 5,
             "retry_on_timeout": True,
         }
+        if self.REDIS_URL:
+            config["url"] = self.REDIS_URL
+        return config
 
     def get_ai_config(self) -> dict:
         """Get AI service configuration."""
@@ -195,4 +197,3 @@ class Settings(BaseSettings):
 
 # Global settings instance
 settings = Settings()
-

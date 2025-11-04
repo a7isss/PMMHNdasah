@@ -10,40 +10,44 @@ from structlog.processors import JSONRenderer, TimeStamper
 from structlog.dev import ConsoleRenderer
 from ..config import settings
 
+# Check structlog version and adjust processors accordingly
+try:
+    from structlog.processors import stack_info
+    HAS_STACK_INFO = True
+except ImportError:
+    HAS_STACK_INFO = False
+
 
 def setup_logging():
     """Configure structured logging for the application."""
 
+    # Base processors
+    base_processors = [
+        structlog.contextvars.merge_contextvars,
+        structlog.processors.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso" if settings.is_production() else "%Y-%m-%d %H:%M:%S"),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+    ]
+
+    # Add stack_info if available
+    if HAS_STACK_INFO:
+        base_processors.insert(-2, structlog.processors.stack_info)
+
     # Determine log format based on environment
     if settings.is_production():
         # JSON logging for production
-        processors = [
-            structlog.contextvars.merge_contextvars,
-            structlog.processors.add_log_level,
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.stack_info,
-            structlog.processors.format_exc_info,
-            structlog.processors.UnicodeDecoder(),
-            JSONRenderer(),
-        ]
+        processors = base_processors + [JSONRenderer()]
     else:
         # Human-readable logging for development
-        processors = [
-            structlog.contextvars.merge_contextvars,
-            structlog.processors.add_log_level,
-            structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"),
-            structlog.processors.stack_info,
-            structlog.processors.format_exc_info,
-            structlog.processors.UnicodeDecoder(),
-            ConsoleRenderer(colors=True),
-        ]
+        processors = base_processors + [ConsoleRenderer(colors=True)]
 
     # Configure structlog
+    import logging
+    log_level = getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO)
     structlog.configure(
         processors=processors,
-        wrapper_class=structlog.make_filtering_bound_logger(
-            getattr(structlog, settings.LOG_LEVEL.upper(), structlog.INFO)
-        ),
+        wrapper_class=structlog.make_filtering_bound_logger(log_level),
         context_class=dict,
         logger_factory=WriteLoggerFactory(),
         cache_logger_on_first_use=True,
@@ -98,4 +102,3 @@ def get_logger(name: str) -> structlog.BoundLoggerBase:
 
 # Global logger instance
 logger = get_logger(__name__)
-
