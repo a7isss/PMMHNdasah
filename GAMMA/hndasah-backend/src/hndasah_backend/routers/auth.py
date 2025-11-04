@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 import structlog
 
-from ..config import settings
+from config import settings
 from ..database import get_db
 from ..models.user import (
     UserCreate, UserUpdate, UserResponse, UserLogin,
@@ -412,4 +412,3 @@ async def get_tenant(
         )
 
     return TenantResponse.from_orm(tenant)
-

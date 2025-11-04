@@ -13,15 +13,15 @@ from sqlalchemy.orm import selectinload, joinedload
 
 from ..database import get_db
 from ..models.sqlalchemy import Project, ProjectMember, Task, CostItem, WhatsAppMessage, User
-from schemas.project import (
+from ..schemas.project import (
     ProjectCreate, ProjectUpdate, ProjectResponse, ProjectMemberCreate,
     ProjectMemberUpdate, ProjectMemberResponse, ProjectDashboard,
     ProjectStats, ProjectSearchFilters
 )
-from middleware.auth_middleware import get_current_user
-from middleware.tenant_middleware import get_current_tenant_id
-from services.ai_service import AIService
-from services.notification_service import NotificationService
+from ..middleware.auth_middleware import get_current_user
+from ..middleware.tenant_middleware import get_current_tenant_id
+from ..services.ai_service import AIService
+from ..services.notification_service import NotificationService
 
 # Initialize services
 ai_service = AIService()
@@ -682,4 +682,3 @@ async def generate_project_insights(
     background_tasks.add_task(ai_service.generate_project_insights, project, db)
 
     return {"message": "AI analysis started", "project_id": project_id}
-

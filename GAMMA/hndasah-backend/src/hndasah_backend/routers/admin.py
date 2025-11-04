@@ -11,8 +11,8 @@ import structlog
 
 from ..database import get_db
 from ..models.user import UserResponse, UserUpdate, UserCreate, TenantCreate, TenantResponse
-from schemas.user import User, Tenant
-from routers.auth import get_current_super_admin_user
+from ..schemas.user import User, Tenant
+from ..routers.auth import get_current_super_admin_user
 
 logger = structlog.get_logger(__name__)
 
@@ -157,7 +157,7 @@ async def get_tenant_details(
 
     # Get project count (if projects table exists)
     try:
-        from schemas.project import Project
+        from ..schemas.project import Project
         project_count = await db.execute(
             select(func.count(Project.id)).where(Project.tenant_id == str(tenant.id))
         )
@@ -424,7 +424,7 @@ async def create_user(
         )
 
     # Hash password
-    from utils.security import get_password_hash
+    from ..utils.security import get_password_hash
     hashed_password = get_password_hash(user_data.password)
 
     # Create user
@@ -484,7 +484,7 @@ async def update_user(
 
     # Hash password if provided
     if 'password' in update_data:
-        from utils.security import get_password_hash
+        from ..utils.security import get_password_hash
         update_data['password_hash'] = get_password_hash(update_data.pop('password'))
 
     # Update user
@@ -675,4 +675,3 @@ async def get_admin_stats(
             "last_updated": datetime.utcnow()
         }
     }
-

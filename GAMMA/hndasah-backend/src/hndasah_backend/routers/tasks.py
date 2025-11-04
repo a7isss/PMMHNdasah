@@ -12,26 +12,26 @@ from datetime import date, datetime, timedelta
 
 from ..database import get_db
 from ..models.sqlalchemy.task import Task, TaskComment, TaskDependency, TaskTemplate
-from models.sqlalchemy.project import Project
-from models.sqlalchemy.user import User
-from schemas.task import (
+from ..models.sqlalchemy.project import Project
+from ..models.sqlalchemy.user import User
+from ..schemas.task import (
     TaskCreate, TaskUpdate, TaskResponse, TaskSearchFilters,
     TaskStats, TaskBulkUpdate, TaskDependency as TaskDepSchema,
     CPMResult, GanttData, TaskSchedule, TaskComment as TaskCommentSchema,
     TaskCommentResponse, TaskTemplate as TaskTemplateSchema
 )
-from utils.security import get_current_user
-from services.ai_service import AIService
-from services.notification_service import NotificationService
-from services.task_service import TaskService
-from services.scheduling_service import AdvancedSchedulingService
-from services.earned_value_service import EarnedValueService
-from services.baseline_service import BaselineService
-from services.reporting_service import ReportingService
-from services.import_export_service import ImportExportService
-from services.dependency_validation_service import DependencyValidationService
-from services.conflict_resolution_service import ConflictResolutionService
-from services.deadline_notification_service import DeadlineNotificationService
+from ..utils.security import get_current_user
+from ..services.ai_service import AIService
+from ..services.notification_service import NotificationService
+from ..services.task_service import TaskService
+from ..services.scheduling_service import AdvancedSchedulingService
+from ..services.earned_value_service import EarnedValueService
+from ..services.baseline_service import BaselineService
+from ..services.reporting_service import ReportingService
+from ..services.import_export_service import ImportExportService
+from ..services.dependency_validation_service import DependencyValidationService
+from ..services.conflict_resolution_service import ConflictResolutionService
+from ..services.deadline_notification_service import DeadlineNotificationService
 
 router = APIRouter()
 ai_service = AIService()
@@ -2278,4 +2278,3 @@ async def reschedule_notifications(
         "message": f"Rescheduled {len(new_notifications)} notifications",
         "notifications": [n.dict() for n in new_notifications]
     }
-
