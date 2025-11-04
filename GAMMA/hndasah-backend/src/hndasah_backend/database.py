@@ -103,23 +103,25 @@ async def create_tables():
         if not engine:
             raise RuntimeError("Database engine could not be initialized")
 
-        async with engine.begin() as conn:
-            print("📦 Enabling PostgreSQL extensions...")
+        # Enable required extensions (each in its own transaction to avoid aborting others)
+        print("📦 Enabling PostgreSQL extensions...")
+        extensions = ["uuid-ossp", "pgvector", "postgis", "pg_cron"]
 
-            # Enable required extensions (with error handling for each)
-            extensions = ["uuid-ossp", "pgvector", "postgis", "pg_cron"]
-            for ext in extensions:
-                try:
+        for ext in extensions:
+            try:
+                # Use a separate transaction for each extension to avoid cascading failures
+                async with engine.begin() as conn:
                     await conn.execute(text(f'CREATE EXTENSION IF NOT EXISTS "{ext}";'))
-                    print(f"✅ Extension {ext} enabled")
-                except Exception as ext_error:
-                    print(f"⚠️  Failed to enable extension {ext}: {ext_error}")
-                    # Continue with other extensions
+                print(f"✅ Extension {ext} enabled")
+            except Exception as ext_error:
+                print(f"⚠️  Failed to enable extension {ext}: {ext_error}")
+                # Continue with other extensions - don't fail the whole process
 
-            print("📋 Creating database tables...")
-            # Create tables
+        # Create tables in a separate transaction
+        print("📋 Creating database tables...")
+        async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-            print("✅ Database tables created successfully")
+        print("✅ Database tables created successfully")
 
         logger.info("Database tables created successfully")
 
