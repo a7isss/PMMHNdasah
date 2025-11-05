@@ -2,7 +2,6 @@
 // Advanced select with search, multi-select, and accessibility
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check, X, Search } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export type SelectVariant = 'default' | 'error' | 'success';
@@ -215,13 +214,15 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(({
                     >
                       {option.icon}
                       <span className="truncate">{option.label}</span>
-                      <X
-                        className="w-3 h-3 cursor-pointer hover:text-blue-600"
+                      <span
+                        className="cursor-pointer hover:text-blue-600 text-xs"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleOptionSelect(option);
                         }}
-                      />
+                      >
+                        ×
+                      </span>
                     </span>
                   ))}
                   {selectedOptions.length > 2 && (
@@ -244,17 +245,21 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(({
           {/* Actions */}
           <div className="flex items-center gap-1">
             {clearable && selectedOptions.length > 0 && (
-              <X
-                className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer"
+              <span
+                className="text-gray-400 hover:text-gray-600 cursor-pointer text-lg leading-none"
                 onClick={handleClear}
-              />
+              >
+                ×
+              </span>
             )}
-            <ChevronDown
+            <span
               className={cn(
-                'w-4 h-4 text-gray-400 transition-transform duration-200',
+                'text-gray-400 transition-transform duration-200 text-xs',
                 isOpen && 'transform rotate-180'
               )}
-            />
+            >
+              ▼
+            </span>
           </div>
         </button>
 
@@ -265,7 +270,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(({
             {searchable && (
               <div className="p-2 border-b border-gray-200">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 text-sm">🔍</span>
                   <input
                     ref={searchInputRef}
                     type="text"
@@ -306,7 +311,7 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(({
                           'w-4 h-4 border rounded flex items-center justify-center',
                           isSelected ? 'bg-blue-600 border-blue-600' : 'border-gray-300'
                         )}>
-                          {isSelected && <Check className="w-3 h-3 text-white" />}
+                        {isSelected && <span className="text-white text-xs">✓</span>}
                         </div>
                       )}
 
@@ -348,6 +353,4 @@ export const Select = React.forwardRef<HTMLDivElement, SelectProps>(({
 
 Select.displayName = 'Select';
 
-// Export types
-export type { SelectProps, SelectOption };
 export default Select;
