@@ -15,7 +15,7 @@ from decimal import Decimal
 import pandas as pd
 from ..models.sqlalchemy.task import Task
 from ..models.sqlalchemy.project import Project
-from ..models.user import User
+from ..models.sqlalchemy.user import User
 from ..schemas.task import (
     JsonTaskStructure, JsonProjectStructure, ImportResult, ExportResult,
     ImportExportRequest

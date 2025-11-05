@@ -12,7 +12,7 @@ from sqlalchemy import select, update, delete, func, text, or_, and_
 
 from ..models.sqlalchemy.task import Task, TaskComment, TaskDependency, TaskTemplate
 from ..models.sqlalchemy.project import Project
-from ..models.user import User
+from ..models.sqlalchemy.user import User
 from ..schemas.task import TaskCreate, TaskUpdate, CPMResult, TaskSchedule
 from ..services.ai_service import AIService
 from ..services.notification_service import NotificationService

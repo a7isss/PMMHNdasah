@@ -13,12 +13,16 @@ from datetime import date, datetime, timedelta
 from ..database import get_db
 from ..models.sqlalchemy.task import Task, TaskComment, TaskDependency, TaskTemplate
 from ..models.sqlalchemy.project import Project
-from ..models.user import User
+from ..models.sqlalchemy.user import User
 from ..schemas.task import (
     TaskCreate, TaskUpdate, TaskResponse, TaskSearchFilters,
     TaskStats, TaskBulkUpdate, TaskDependency as TaskDepSchema,
     CPMResult, GanttData, TaskSchedule, TaskComment as TaskCommentSchema,
-    TaskCommentResponse, TaskTemplate as TaskTemplateSchema
+    TaskCommentResponse, TaskTemplate as TaskTemplateSchema,
+    ProjectBaseline, BaselineCreateRequest, TaskBaselineComparison,
+    ReportGenerationResult, ReportRequest, EarnedValueMetrics, EVMAnalysis, EVMPrediction,
+    ImportResult, ExportResult, ImportExportRequest, DependencyValidationResult, DependencyGraph,
+    SchedulingConflict, ConflictResolutionResult
 )
 from ..utils.security import get_current_user
 from ..services.ai_service import AIService

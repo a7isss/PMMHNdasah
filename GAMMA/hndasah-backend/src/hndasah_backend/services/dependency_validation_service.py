@@ -9,8 +9,8 @@ from uuid import UUID
 import structlog
 from collections import defaultdict, deque
 
-from models.sqlalchemy.task import Task, TaskDependency
-from schemas.task import DependencyValidationResult, DependencyGraph
+from ..models.sqlalchemy.task import Task, TaskDependency
+from ..schemas.task import DependencyValidationResult, DependencyGraph
 
 logger = structlog.get_logger(__name__)
 
@@ -462,4 +462,3 @@ class DependencyValidationService:
                 })
 
         return suggestions
-

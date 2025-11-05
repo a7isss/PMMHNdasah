@@ -9,7 +9,7 @@ from uuid import UUID
 import structlog
 
 from ..models.sqlalchemy.task import Task
-from ..models.user import User
+from ..models.sqlalchemy.user import User
 from ..schemas.task import DeadlineNotification, NotificationSchedule
 
 logger = structlog.get_logger(__name__)

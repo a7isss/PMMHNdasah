@@ -7,12 +7,11 @@ from datetime import date, datetime, timedelta
 from typing import List, Dict, Any, Optional, Tuple
 from uuid import UUID
 import structlog
-from ortools.scheduling import pywrapcp
-from ortools.util import pywraputil
+from ortools.constraint_solver import pywrapcp
 
 from ..models.sqlalchemy.task import Task, TaskDependency
 from ..models.sqlalchemy.project import Project
-from ..models.user import User
+from ..models.sqlalchemy.user import User
 from ..schemas.task import (
     CPMResult, TaskSchedule, ResourceLevelingResult,
     SchedulingOptimizationResult, TaskConstraint

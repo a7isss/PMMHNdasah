@@ -4,7 +4,8 @@ Task management, scheduling, and CPM models
 """
 
 from datetime import date, datetime
-from typing import Optional, List, Dict, Any, UUID
+from typing import Optional, List, Dict, Any, Tuple
+from uuid import UUID
 from pydantic import BaseModel, Field, validator
 from decimal import Decimal
 
@@ -592,4 +593,3 @@ class NotificationSchedule(BaseModel):
     scheduled_time: datetime = Field(..., description="When to send notification")
     status: str = Field("pending", description="Schedule status")
     retry_count: int = Field(0, description="Number of retry attempts")
-

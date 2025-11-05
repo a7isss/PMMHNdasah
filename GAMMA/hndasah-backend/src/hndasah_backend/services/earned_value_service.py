@@ -9,9 +9,9 @@ from uuid import UUID
 import structlog
 from decimal import Decimal, ROUND_HALF_UP
 
-from models.sqlalchemy.task import Task
-from models.sqlalchemy.project import Project
-from schemas.task import EarnedValueMetrics, EVMAnalysis, EVMPrediction
+from ..models.sqlalchemy.task import Task
+from ..models.sqlalchemy.project import Project
+from ..schemas.task import EarnedValueMetrics, EVMAnalysis, EVMPrediction
 
 logger = structlog.get_logger(__name__)
 
@@ -485,4 +485,3 @@ class EarnedValueService:
             risks.append("Early stage performance risk - poor initial performance trends")
 
         return risks if risks else ["No significant risks identified based on current EVM metrics"]
-

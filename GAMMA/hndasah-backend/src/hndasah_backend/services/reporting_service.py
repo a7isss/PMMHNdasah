@@ -23,9 +23,9 @@ from reportlab.platypus import (
 from reportlab.platypus.flowables import HRFlowable
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
 
-from models.sqlalchemy.task import Task
-from models.sqlalchemy.project import Project
-from schemas.task import (
+from ..models.sqlalchemy.task import Task
+from ..models.sqlalchemy.project import Project
+from ..schemas.task import (
     EarnedValueMetrics, EVMAnalysis, ReportRequest,
     ReportGenerationResult, ReportTemplate
 )
@@ -789,4 +789,3 @@ class ReportingService:
         story.append(Spacer(1, 20))
 
         return story
-

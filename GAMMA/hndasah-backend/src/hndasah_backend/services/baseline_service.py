@@ -9,9 +9,9 @@ from uuid import UUID, uuid4
 import structlog
 from decimal import Decimal
 
-from models.sqlalchemy.task import Task
-from models.sqlalchemy.project import Project
-from schemas.task import (
+from ..models.sqlalchemy.task import Task
+from ..models.sqlalchemy.project import Project
+from ..schemas.task import (
     TaskBaseline, TaskBaselineComparison, ProjectBaseline,
     BaselineCreateRequest
 )
@@ -441,4 +441,3 @@ class BaselineService:
         except Exception as e:
             logger.error("Baseline deletion failed", error=str(e), project_id=str(project_id))
             raise
-

@@ -13,8 +13,8 @@ from .whatsapp import (
     WhatsAppConversation, WhatsAppWebhookLog
 )
 
-# Import User model from schemas (SQLAlchemy model)
-from ...schemas.user import User, Tenant
+# Import User and Tenant models
+from .user import User, Tenant
 
 __all__ = [
     # Project models
