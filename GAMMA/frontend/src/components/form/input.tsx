@@ -133,7 +133,5 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({
 
 Input.displayName = 'Input';
 
-// Export types
-export type { InputProps };
 export { Input };
 export default Input;
