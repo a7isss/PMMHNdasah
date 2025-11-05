@@ -5,15 +5,6 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
-import {
-  Bell,
-  Search,
-  User,
-  Settings,
-  LogOut,
-  ChevronRight,
-  Home,
-} from 'lucide-react';
 import { useWorkspace } from '../../lib/providers/workspace-provider';
 import { Button } from '../ui/button';
 import { Input } from '../form/input';
@@ -74,10 +65,10 @@ export function WorkspaceHeader({
         <div className="flex items-center gap-4 flex-1 min-w-0">
           {/* Breadcrumbs */}
           <nav className="flex items-center gap-1 text-sm">
-            <Home className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-400">🏠</span>
             {generatedBreadcrumbs.map((crumb, index) => (
               <React.Fragment key={index}>
-                <ChevronRight className="w-3 h-3 text-gray-400" />
+                <span className="text-gray-400">›</span>
                 {crumb.href && index < generatedBreadcrumbs.length - 1 ? (
                   <a
                     href={crumb.href}
@@ -105,7 +96,7 @@ export function WorkspaceHeader({
         {/* Center Section - Search */}
         <div className="flex-1 max-w-md mx-8">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 text-sm">🔍</span>
             <Input
               placeholder="Search projects, tasks..."
               className="pl-10"
@@ -126,7 +117,7 @@ export function WorkspaceHeader({
             className="relative p-2"
             aria-label="Notifications"
           >
-            <Bell className="w-4 h-4" />
+            <span className="text-lg">🔔</span>
             {/* Notification badge - conditionally show */}
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
           </Button>
@@ -157,7 +148,7 @@ export function WorkspaceHeader({
                 className="p-1"
                 aria-label="User menu"
               >
-                <User className="w-4 h-4" />
+                <span className="text-lg">👤</span>
               </Button>
 
               {/* Dropdown */}
@@ -167,14 +158,14 @@ export function WorkspaceHeader({
                     href={`/${tenantId}/profile`}
                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    <User className="w-4 h-4" />
+                    <span className="text-lg">👤</span>
                     Profile
                   </a>
                   <a
                     href={`/${tenantId}/settings`}
                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    <Settings className="w-4 h-4" />
+                    <span className="text-lg">⚙️</span>
                     Settings
                   </a>
                   <hr className="my-1" />
@@ -182,7 +173,7 @@ export function WorkspaceHeader({
                     onClick={handleLogout}
                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <span className="text-lg">🚪</span>
                     Sign out
                   </button>
                 </div>
