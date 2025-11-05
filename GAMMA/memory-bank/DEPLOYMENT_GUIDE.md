@@ -99,6 +99,22 @@ EXPOSE 5432
 
 ## ☁️ **CLOUD DEPLOYMENT OPTIONS**
 
+### **Railway Deployment (Current Production)**
+```bash
+# Railway is the current production deployment platform
+# Complete setup guide: ../RAILWAY_DEPLOYMENT_GUIDE.md
+
+# Quick Railway deployment:
+railway login
+railway init hndasah-pm-gamma
+cd GAMMA/hndasah-backend && railway add --name backend
+cd GAMMA/FRONTEND && railway add --name frontend
+railway up
+
+# Environment variables required:
+# SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD, DATABASE_URL, REDIS_URL
+```
+
 ### **AWS Deployment**
 ```yaml
 # AWS CloudFormation template

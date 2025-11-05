@@ -320,6 +320,178 @@ interface MessagesQuery {
 
 ---
 
+## 🔐 **ADMIN API (SuperAdmin Only)**
+
+### **POST /auth/superadmin/login**
+**Purpose:** Superadmin authentication using environment variables
+**Auth Required:** ❌ None (uses environment credentials)
+```typescript
+interface SuperAdminLoginRequest {
+  username: string; // Must match SUPERADMIN_EMAIL env var
+  password: string; // Must match SUPERADMIN_PASSWORD env var
+}
+
+interface SuperAdminLoginResponse {
+  access_token: string;
+  token_type: string;
+  user: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: 'superadmin';
+    superadmin: true;
+  };
+}
+```
+
+### **GET /admin/tenants**
+**Purpose:** List all tenants with filtering and pagination
+**Auth Required:** ✅ SuperAdmin JWT Token
+```typescript
+interface TenantsQuery {
+  skip?: number;
+  limit?: number;
+  search?: string;
+  is_active?: boolean;
+}
+
+interface TenantData {
+  id: string;
+  name: string;
+  domain?: string;
+  subscription_plan: string;
+  is_active: boolean;
+  contact_email?: string;
+  contact_phone?: string;
+  user_count: number;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+### **POST /admin/tenants**
+**Purpose:** Create a new tenant
+**Auth Required:** ✅ SuperAdmin JWT Token
+```typescript
+interface CreateTenantRequest {
+  name: string;
+  domain?: string;
+  subscription_plan: string;
+  contact_email?: string;
+  contact_phone?: string;
+}
+```
+
+### **GET /admin/tenants/{tenant_id}**
+**Purpose:** Get detailed tenant information
+**Auth Required:** ✅ SuperAdmin JWT Token
+
+### **PUT /admin/tenants/{tenant_id}**
+**Purpose:** Update tenant information
+**Auth Required:** ✅ SuperAdmin JWT Token
+
+### **DELETE /admin/tenants/{tenant_id}**
+**Purpose:** Delete a tenant (use with caution)
+**Auth Required:** ✅ SuperAdmin JWT Token
+
+### **GET /admin/users**
+**Purpose:** List all users across all tenants
+**Auth Required:** ✅ SuperAdmin JWT Token
+```typescript
+interface UsersQuery {
+  skip?: number;
+  limit?: number;
+  search?: string;
+  tenant_id?: string;
+  role?: string;
+  is_active?: boolean;
+}
+
+interface UserData {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+  is_active: boolean;
+  is_email_verified: boolean;
+  whatsapp_verified: boolean;
+  last_login_at?: string;
+  tenant: {
+    id: string;
+    name: string;
+    domain?: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
+```
+
+### **GET /admin/users/{user_id}**
+**Purpose:** Get detailed user information
+**Auth Required:** ✅ SuperAdmin JWT Token
+
+### **POST /admin/users**
+**Purpose:** Create a new user in a specific tenant
+**Auth Required:** ✅ SuperAdmin JWT Token
+```typescript
+interface CreateUserRequest {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  phone?: string;
+  job_title?: string;
+  role: string;
+  whatsapp_number?: string;
+  tenant_id: string; // Required in query parameter
+}
+```
+
+### **PUT /admin/users/{user_id}**
+**Purpose:** Update user information
+**Auth Required:** ✅ SuperAdmin JWT Token
+
+### **DELETE /admin/users/{user_id}**
+**Purpose:** Delete a user
+**Auth Required:** ✅ SuperAdmin JWT Token
+
+### **POST /admin/users/{user_id}/deactivate**
+**Purpose:** Deactivate a user account
+**Auth Required:** ✅ SuperAdmin JWT Token
+
+### **POST /admin/users/{user_id}/activate**
+**Purpose:** Reactivate a user account
+**Auth Required:** ✅ SuperAdmin JWT Token
+
+### **GET /admin/stats**
+**Purpose:** Get comprehensive system statistics
+**Auth Required:** ✅ SuperAdmin JWT Token
+```typescript
+interface AdminStats {
+  tenants: {
+    total: number;
+    active: number;
+    inactive: number;
+    new_last_30_days: number;
+  };
+  users: {
+    total: number;
+    active: number;
+    inactive: number;
+    new_last_30_days: number;
+  };
+  roles: Record<string, number>; // Role breakdown
+  system_health: {
+    database_status: string;
+    last_updated: string;
+  };
+}
+```
+
+---
+
 ## 🔧 **RTK QUERY INTEGRATION**
 
 ### **Frontend Usage Patterns:**
