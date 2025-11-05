@@ -47,7 +47,7 @@ export interface RadioGroupProps {
   className?: string;
 }
 
-export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(({
+const Radio = React.forwardRef<HTMLInputElement, RadioProps>(({
   label,
   error,
   helperText,
@@ -172,7 +172,7 @@ export const Radio = React.forwardRef<HTMLInputElement, RadioProps>(({
 Radio.displayName = 'Radio';
 
 // Radio Group Component
-export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(({
+const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(({
   options,
   value,
   name,
@@ -238,7 +238,5 @@ export const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(({
 
 RadioGroup.displayName = 'RadioGroup';
 
-// Export types
-export type { RadioProps, RadioGroupProps };
 export { Radio, RadioGroup };
 export default Radio;
