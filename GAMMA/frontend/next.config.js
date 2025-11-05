@@ -39,6 +39,16 @@ const nextConfig = {
   // Output optimization
   output: 'standalone',
 
+  // API rewrites for Railway backend proxying
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://fantastic-embrace.railway.internal/api/:path*',
+      },
+    ];
+  },
+
   // Headers for security and performance
   async headers() {
     return [
