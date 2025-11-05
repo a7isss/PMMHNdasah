@@ -77,7 +77,7 @@ class CostItem(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (status IN ('planned', 'committed', 'approved', 'incurred', 'paid'))"),
+        CheckConstraint("status IN ('planned', 'committed', 'approved', 'incurred', 'paid')"),
         CheckConstraint("actual_amount >= 0"),
         CheckConstraint("budgeted_amount >= 0"),
         CheckConstraint("ai_risk_score >= 0 AND ai_risk_score <= 1 OR ai_risk_score IS NULL"),
@@ -175,7 +175,7 @@ class BillOfQuantities(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (approval_status IN ('draft', 'submitted', 'approved', 'rejected'))"),
+        CheckConstraint("approval_status IN ('draft', 'submitted', 'approved', 'rejected')"),
         CheckConstraint("total_amount >= 0"),
     )
 
@@ -229,7 +229,7 @@ class CostComment(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (comment_type IN ('comment', 'approval_request', 'approval_granted', 'approval_rejected', 'payment_made', 'system'))"),
+        CheckConstraint("comment_type IN ('comment', 'approval_request', 'approval_granted', 'approval_rejected', 'payment_made', 'system')"),
     )
 
 
@@ -253,8 +253,8 @@ class CostApprovalWorkflow(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (approval_level IN ('manager', 'senior_manager', 'director', 'cfo'))"),
-        text("CHECK (approval_status IN ('pending', 'approved', 'rejected'))"),
+        CheckConstraint("approval_level IN ('manager', 'senior_manager', 'director', 'cfo')"),
+        CheckConstraint("approval_status IN ('pending', 'approved', 'rejected')"),
         CheckConstraint("approval_limit >= 0"),
     )
 
@@ -280,7 +280,7 @@ class VendorContract(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (contract_type IN ('supply', 'service', 'subcontract'))"),
+        CheckConstraint("contract_type IN ('supply', 'service', 'subcontract')"),
         CheckConstraint("end_date >= start_date"),
         CheckConstraint("total_value >= 0"),
     )
@@ -307,6 +307,3 @@ class CostTemplate(BaseModel):
     __table_args__ = (
         CheckConstraint("typical_amount >= 0"),
     )
-
-
-

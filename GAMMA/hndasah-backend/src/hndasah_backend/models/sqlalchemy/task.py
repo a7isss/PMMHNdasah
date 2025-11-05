@@ -90,7 +90,7 @@ class Task(BaseModel):
     __table_args__ = (
         CheckConstraint("planned_end_date >= planned_start_date OR planned_end_date IS NULL"),
         CheckConstraint("actual_end_date >= actual_start_date OR actual_end_date IS NULL"),
-        text("CHECK (status IN ('not_started', 'in_progress', 'completed', 'on_hold', 'cancelled'))"),
+        CheckConstraint("status IN ('not_started', 'in_progress', 'completed', 'on_hold', 'cancelled')"),
         CheckConstraint("progress_percentage >= 0 AND progress_percentage <= 100"),
         CheckConstraint("level >= 1"),
         CheckConstraint("ai_priority_score >= 0 AND ai_priority_score <= 1 OR ai_priority_score IS NULL"),
@@ -227,7 +227,7 @@ class TaskComment(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (comment_type IN ('comment', 'status_change', 'assignment_change', 'progress_update', 'system'))"),
+        CheckConstraint("comment_type IN ('comment', 'status_change', 'assignment_change', 'progress_update', 'system')"),
     )
 
 
@@ -247,7 +247,7 @@ class TaskDependency(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (dependency_type IN ('finish_to_start', 'start_to_start', 'finish_to_finish', 'start_to_finish'))"),
+        CheckConstraint("dependency_type IN ('finish_to_start', 'start_to_start', 'finish_to_finish', 'start_to_finish')"),
         CheckConstraint("predecessor_id != successor_id"),
     )
 
@@ -276,6 +276,3 @@ class TaskTemplate(BaseModel):
         CheckConstraint("estimated_duration_days > 0"),
         CheckConstraint("estimated_hours >= 0"),
     )
-
-
-
