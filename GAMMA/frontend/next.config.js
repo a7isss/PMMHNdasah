@@ -40,11 +40,12 @@ const nextConfig = {
   output: 'standalone',
 
   // API rewrites for Railway backend proxying
+  // Use the backend service's public Railway URL
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://fantastic-embrace.railway.internal/api/:path*',
+        destination: 'https://tranquil-enchantment-production.up.railway.app/api/:path*',
       },
     ];
   },
