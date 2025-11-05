@@ -17,7 +17,7 @@ from .config import settings
 from .database import create_tables, get_db, health_check_database, health_check_redis
 # Temporarily commented out router imports to fix Railway deployment
 # from .routers import auth, projects, tasks, costs, whatsapp, ai, admin
-from .routers import admin  # Enable admin router for superadmin functionality
+from .routers import auth, admin  # Enable auth router for superadmin login
 # Temporarily commented out middleware imports to fix Railway deployment
 # from .middleware.tenant_middleware import TenantMiddleware
 # from .middleware.auth_middleware import AuthMiddleware
@@ -281,11 +281,11 @@ async def health_check():
     return health_status
 
 # API v1 routes - temporarily commented out to fix Railway deployment
-# app.include_router(
-#     auth.router,
-#     prefix="/api/v1/auth",
-#     tags=["Authentication"]
-# )
+app.include_router(
+    auth.router,
+    prefix="/api/v1/auth",
+    tags=["Authentication"]
+)
 
 # app.include_router(
 #     projects.router,
