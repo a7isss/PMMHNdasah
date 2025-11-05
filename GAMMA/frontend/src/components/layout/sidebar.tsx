@@ -6,19 +6,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  ChevronLeft,
-  ChevronRight,
-  LayoutDashboard,
-  FolderKanban,
-  CheckSquare,
-  BarChart3,
-  Users,
-  Settings,
-  FileText,
-  Building,
-  Menu,
-} from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useWorkspace } from '../../lib/providers/workspace-provider';
 import { Button } from '../ui/button';
@@ -35,48 +22,48 @@ const navigationItems: NavigationItem[] = [
   {
     name: 'Dashboard',
     href: '/dashboard',
-    icon: LayoutDashboard,
+    icon: () => <span className="text-lg">📊</span>,
   },
   {
     name: 'Projects',
     href: '/projects',
-    icon: FolderKanban,
+    icon: () => <span className="text-lg">📁</span>,
     permission: 'view_projects',
   },
   {
     name: 'Tasks',
     href: '/tasks',
-    icon: CheckSquare,
+    icon: () => <span className="text-lg">✅</span>,
     permission: 'view_projects',
   },
   {
     name: 'Procurement',
     href: '/procurement',
-    icon: Building,
+    icon: () => <span className="text-lg">🏗️</span>,
     permission: 'view_projects',
   },
   {
     name: 'Reports',
     href: '/reports',
-    icon: BarChart3,
+    icon: () => <span className="text-lg">📈</span>,
     permission: 'view_reports',
   },
   {
     name: 'Users',
     href: '/users',
-    icon: Users,
+    icon: () => <span className="text-lg">👥</span>,
     permission: 'manage_users',
   },
   {
     name: 'Documents',
     href: '/documents',
-    icon: FileText,
+    icon: () => <span className="text-lg">📄</span>,
     permission: 'view_projects',
   },
   {
     name: 'Settings',
     href: '/settings',
-    icon: Settings,
+    icon: () => <span className="text-lg">⚙️</span>,
     permission: 'manage_users',
   },
 ];
@@ -130,9 +117,9 @@ export function WorkspaceSidebar({ className }: WorkspaceSidebarProps) {
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isCollapsed ? (
-            <ChevronRight className="w-3 h-3" />
+            <span className="text-xs">▶</span>
           ) : (
-            <ChevronLeft className="w-3 h-3" />
+            <span className="text-xs">◀</span>
           )}
         </Button>
       </div>
