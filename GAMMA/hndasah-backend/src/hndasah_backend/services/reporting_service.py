@@ -11,17 +11,40 @@ import structlog
 from decimal import Decimal
 from pathlib import Path
 
-# ReportLab imports
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
-from reportlab.platypus import (
-    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
-    PageBreak, Image, Flowable
-)
-from reportlab.platypus.flowables import HRFlowable
-from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
+# Optional ReportLab imports
+try:
+    from reportlab.lib import colors
+    from reportlab.lib.pagesizes import letter, A4
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.platypus import (
+        SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle,
+        PageBreak, Image, Flowable
+    )
+    from reportlab.platypus.flowables import HRFlowable
+    from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_RIGHT
+    REPORTLAB_AVAILABLE = True
+except ImportError:
+    # Fallback when ReportLab is not available
+    colors = None
+    letter = None
+    A4 = None
+    getSampleStyleSheet = None
+    ParagraphStyle = None
+    inch = None
+    SimpleDocTemplate = None
+    Paragraph = None
+    Spacer = None
+    Table = None
+    TableStyle = None
+    PageBreak = None
+    Image = None
+    Flowable = None
+    HRFlowable = None
+    TA_LEFT = None
+    TA_CENTER = None
+    TA_RIGHT = None
+    REPORTLAB_AVAILABLE = False
 
 from ..models.sqlalchemy.task import Task
 from ..models.sqlalchemy.project import Project
@@ -43,6 +66,10 @@ class ReportingService:
 
     def _setup_styles(self) -> Dict[str, Any]:
         """Setup ReportLab styles for consistent formatting."""
+        if not REPORTLAB_AVAILABLE:
+            logger.warning("ReportLab not available, using fallback styles")
+            return {}
+
         styles = getSampleStyleSheet()
 
         # Custom styles
@@ -111,6 +138,10 @@ class ReportingService:
         Returns:
             Report generation result
         """
+        if not REPORTLAB_AVAILABLE:
+            logger.warning("ReportLab not available, cannot generate PDF reports")
+            raise ValueError("PDF report generation requires ReportLab library")
+
         try:
             # Generate unique filename
             timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -183,6 +214,10 @@ class ReportingService:
         Returns:
             Report generation result
         """
+        if not REPORTLAB_AVAILABLE:
+            logger.warning("ReportLab not available, cannot generate PDF reports")
+            raise ValueError("PDF report generation requires ReportLab library")
+
         try:
             # Generate unique filename
             timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
@@ -256,6 +291,10 @@ class ReportingService:
         Returns:
             Report generation result
         """
+        if not REPORTLAB_AVAILABLE:
+            logger.warning("ReportLab not available, cannot generate PDF reports")
+            raise ValueError("PDF report generation requires ReportLab library")
+
         try:
             # Generate unique filename
             timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
