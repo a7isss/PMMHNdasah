@@ -2,7 +2,7 @@
 // Accessible checkbox with custom styling and states
 
 import React from 'react';
-import { Check } from 'lucide-react';
+import { Check } from '@mui/icons-material';
 import { cn } from '../../lib/utils';
 
 export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
