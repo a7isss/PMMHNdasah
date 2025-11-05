@@ -8,7 +8,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 import structlog
 from typing import Optional, List
 
-from utils.security import decode_token
+from ..utils.security import decode_token
 
 logger = structlog.get_logger(__name__)
 
@@ -225,4 +225,3 @@ class AuthContext:
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Clean up authentication context."""
         pass
-
