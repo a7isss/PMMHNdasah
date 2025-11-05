@@ -173,6 +173,17 @@ def get_current_user(request: Request):
     return get_current_user_required(request)
 
 
+def get_current_super_admin(request: Request):
+    """Get current user and verify they are a super admin."""
+    user = get_current_user_required(request)
+    if user.role != 'super_admin':
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Super admin access required",
+        )
+    return user
+
+
 def require_auth(func):
     """Decorator to require authentication for a function."""
     async def wrapper(*args, **kwargs):
