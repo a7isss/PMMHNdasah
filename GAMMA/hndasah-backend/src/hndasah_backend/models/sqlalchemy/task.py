@@ -74,6 +74,9 @@ class Task(BaseModel):
     custom_fields: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
     ai_metadata: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
 
+    # Soft Deletion
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
     # Relationships
     project: Mapped["Project"] = relationship("Project", back_populates="tasks")
     assigned_user: Mapped[Optional["User"]] = relationship("User", foreign_keys=[assigned_to])

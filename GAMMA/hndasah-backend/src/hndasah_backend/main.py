@@ -15,9 +15,8 @@ from typing import Callable
 
 from .config import settings
 from .database import create_tables, get_db, health_check_database, health_check_redis
-# Temporarily commented out router imports to fix Railway deployment
-# from .routers import auth, projects, tasks, costs, whatsapp, ai, admin
-from .routers import auth, admin  # Enable auth router for superadmin login
+# Router imports - only enabled routers
+from .routers import auth, admin, debug
 # Temporarily commented out middleware imports to fix Railway deployment
 from .middleware.tenant_middleware import TenantMiddleware
 from .middleware.auth_middleware import AuthMiddleware
@@ -321,6 +320,12 @@ app.include_router(
     admin.router,
     prefix="/api/v1/admin",
     tags=["Admin"]
+)
+
+app.include_router(
+    debug.router,
+    prefix="/api/v1/admin/debug",
+    tags=["Debug"]
 )
 
 # WebSocket endpoint for real-time features - temporarily commented out

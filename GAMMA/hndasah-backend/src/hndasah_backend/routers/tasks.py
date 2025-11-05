@@ -120,7 +120,12 @@ async def list_tasks(
         raise HTTPException(status_code=403, detail="Not authorized to access this project")
 
     # Build query
-    query = select(Task).where(Task.project_id == project_id)
+    query = select(Task).where(
+        and_(
+            Task.project_id == project_id,
+            Task.deleted_at.is_(None)
+        )
+    )
 
     # Apply filters
     if status:
@@ -267,7 +272,7 @@ async def delete_task(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Delete a task."""
+    """Soft delete a task."""
     # Check access with owner permission
     if not await check_task_access(task_id, current_user, db, require_owner=True):
         raise HTTPException(status_code=403, detail="Not authorized to delete this task")
@@ -281,29 +286,25 @@ async def delete_task(
 
     # Check if task has subtasks
     subtask_count = await db.execute(
-        select(func.count(Task.id)).where(Task.parent_task_id == task_id)
-    )
-    if subtask_count.scalar() > 0:
-        raise HTTPException(status_code=400, detail="Cannot delete task with subtasks. Delete subtasks first.")
-
-    # Delete dependencies
-    await db.execute(
-        delete(TaskDependency).where(
-            or_(
-                TaskDependency.predecessor_id == task_id,
-                TaskDependency.successor_id == task_id
+        select(func.count(Task.id)).where(
+            and_(
+                Task.parent_task_id == task_id,
+                Task.deleted_at.is_(None)
             )
         )
     )
+    if subtask_count.scalar() > 0:
+        raise HTTPException(status_code=400, detail="Cannot delete task with active subtasks. Delete subtasks first.")
 
-    # Delete task
-    await db.execute(delete(Task).where(Task.id == task_id))
+    # Soft delete task (set deleted_at timestamp)
+    task.deleted_at = datetime.utcnow()
+    task.updated_at = datetime.utcnow()
     await db.commit()
 
     # Background tasks
     background_tasks.add_task(notification_service.notify_task_deleted, task, current_user)
 
-    return {"message": "Task deleted successfully"}
+    return {"message": "Task deleted successfully (soft delete)"}
 
 
 @router.post("/projects/{project_id}/tasks/bulk-update", response_model=Dict[str, Any])

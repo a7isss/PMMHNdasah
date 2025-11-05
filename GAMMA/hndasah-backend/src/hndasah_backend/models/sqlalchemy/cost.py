@@ -65,6 +65,9 @@ class CostItem(BaseModel):
     custom_fields: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
     ai_metadata: Mapped[Dict[str, Any]] = mapped_column(JSONB, default=dict)
 
+    # Soft Deletion
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
     # Relationships
     project: Mapped["Project"] = relationship("Project", back_populates="cost_items")
     task: Mapped[Optional["Task"]] = relationship("Task", back_populates="cost_items")

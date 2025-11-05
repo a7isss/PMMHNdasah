@@ -675,3 +675,195 @@ async def get_admin_stats(
             "last_updated": datetime.utcnow()
         }
     }
+
+
+# ===== SOFT DELETION RESTORE ENDPOINTS =====
+
+@router.post("/restore/tasks/{task_id}")
+async def restore_task(
+    task_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_super_admin_user)
+):
+    """
+    Restore a soft-deleted task (SuperAdmin only).
+    """
+    from ..models.sqlalchemy.task import Task
+
+    result = await db.execute(select(Task).where(Task.id == task_id))
+    task = result.scalar_one_or_none()
+
+    if not task:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Task not found"
+        )
+
+    if task.deleted_at is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Task is not soft-deleted"
+        )
+
+    # Restore task
+    task.deleted_at = None
+    task.updated_at = datetime.utcnow()
+    await db.commit()
+
+    logger.info("Task restored by SuperAdmin", task_id=task_id, restored_by=current_user.email)
+
+    return {"message": "Task restored successfully"}
+
+
+@router.post("/restore/projects/{project_id}")
+async def restore_project(
+    project_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_super_admin_user)
+):
+    """
+    Restore a soft-deleted project (SuperAdmin only).
+    """
+    from ..models.sqlalchemy.project import Project
+
+    result = await db.execute(select(Project).where(Project.id == project_id))
+    project = result.scalar_one_or_none()
+
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found"
+        )
+
+    if project.deleted_at is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Project is not soft-deleted"
+        )
+
+    # Restore project
+    project.deleted_at = None
+    project.updated_at = datetime.utcnow()
+    await db.commit()
+
+    logger.info("Project restored by SuperAdmin", project_id=project_id, restored_by=current_user.email)
+
+    return {"message": "Project restored successfully"}
+
+
+@router.post("/restore/users/{user_id}")
+async def restore_user(
+    user_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_super_admin_user)
+):
+    """
+    Restore a soft-deleted user (SuperAdmin only).
+    """
+    result = await db.execute(select(User).where(User.id == user_id))
+    user = result.scalar_one_or_none()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    if user.deleted_at is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User is not soft-deleted"
+        )
+
+    # Restore user
+    user.deleted_at = None
+    user.updated_at = datetime.utcnow()
+    await db.commit()
+
+    logger.info("User restored by SuperAdmin", user_id=user_id, restored_by=current_user.email)
+
+    return {"message": "User restored successfully"}
+
+
+@router.get("/deleted/tasks")
+async def list_deleted_tasks(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_super_admin_user)
+):
+    """
+    List soft-deleted tasks (SuperAdmin only).
+    """
+    from ..models.sqlalchemy.task import Task
+
+    query = select(Task).where(Task.deleted_at.isnot(None)).offset(skip).limit(limit)
+    result = await db.execute(query)
+    tasks = result.scalars().all()
+
+    return [
+        {
+            "id": str(task.id),
+            "name": task.name,
+            "project_id": str(task.project_id),
+            "deleted_at": task.deleted_at,
+            "created_at": task.created_at
+        }
+        for task in tasks
+    ]
+
+
+@router.get("/deleted/projects")
+async def list_deleted_projects(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_super_admin_user)
+):
+    """
+    List soft-deleted projects (SuperAdmin only).
+    """
+    from ..models.sqlalchemy.project import Project
+
+    query = select(Project).where(Project.deleted_at.isnot(None)).offset(skip).limit(limit)
+    result = await db.execute(query)
+    projects = result.scalars().all()
+
+    return [
+        {
+            "id": str(project.id),
+            "name": project.name,
+            "tenant_id": project.tenant_id,
+            "deleted_at": project.deleted_at,
+            "created_at": project.created_at
+        }
+        for project in projects
+    ]
+
+
+@router.get("/deleted/users")
+async def list_deleted_users(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_super_admin_user)
+):
+    """
+    List soft-deleted users (SuperAdmin only).
+    """
+    query = select(User).where(User.deleted_at.isnot(None)).offset(skip).limit(limit)
+    result = await db.execute(query)
+    users = result.scalars().all()
+
+    return [
+        {
+            "id": str(user.id),
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "tenant_id": str(user.tenant_id),
+            "deleted_at": user.deleted_at,
+            "created_at": user.created_at
+        }
+        for user in users
+    ]

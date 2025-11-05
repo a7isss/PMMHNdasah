@@ -104,12 +104,66 @@ interface AIDataPayload {
 
 ---
 
+## 🔐 Super Admin Setup & Login
+
+### Initial Setup
+
+1. **Copy Environment Template**:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Configure Super Admin Credentials**:
+   ```bash
+   # Edit .env file and set:
+   SUPERADMIN_EMAIL=your-admin-email@domain.com
+   SUPERADMIN_PASSWORD=YourSecurePassword123!
+   ```
+
+3. **Start the Application**:
+   ```bash
+   # Backend
+   cd hndasah-backend
+   pip install -r requirements.txt
+   uvicorn main:app --reload
+
+   # Frontend (separate terminal)
+   cd ../FRONTEND
+   npm install
+   npm run dev
+   ```
+
+### Super Admin Login Process
+
+1. **Navigate to Admin Login**: `http://localhost:3000/admin/login`
+2. **Enter Super Admin Credentials**:
+   - **Email**: Use the `SUPERADMIN_EMAIL` from your `.env` file
+   - **Password**: Use the `SUPERADMIN_PASSWORD` from your `.env` file
+3. **Access Admin Dashboard**: After login, you'll be redirected to `/admin`
+4. **Use Debug Dashboard**: Click "Debug Dashboard" in the admin interface
+
+### Super Admin Features
+
+- **System Monitoring**: Real-time performance metrics and health checks
+- **Database Diagnostics**: Connection status, table statistics, and query analysis
+- **API Testing Tools**: Built-in endpoint tester for debugging
+- **Log Viewer**: System logs with filtering capabilities
+- **User Management**: Create and manage tenants and users
+- **Data Recovery**: Restore soft-deleted records
+
+### API Endpoint
+
+The super admin login uses: `POST /api/v1/auth/superadmin/login`
+
+**Note**: The super admin user is automatically created in the database on first login if it doesn't exist.
+
 ## 🚀 Getting Started
 
-1. **Review** `MASTER_PROMPT.md` for complete implementation guide
-2. **Study** `ARCHITECTURE/` for system understanding
-3. **Follow** `IMPLEMENTATION/01_Phase_Planning.md` for rollout strategy
-4. **Begin** with `DATABASE/01_Schema_Design.md`
+1. **Setup Super Admin** (see section above)
+2. **Review** `MASTER_PROMPT.md` for complete implementation guide
+3. **Study** `ARCHITECTURE/` for system understanding
+4. **Follow** `IMPLEMENTATION/01_Phase_Planning.md` for rollout strategy
+5. **Begin** with `DATABASE/01_Schema_Design.md`
 
 ---
 

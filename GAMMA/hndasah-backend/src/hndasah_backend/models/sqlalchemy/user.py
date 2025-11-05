@@ -73,6 +73,9 @@ class User(Base):
     # Preferences (stored as JSON)
     preferences: Mapped[Optional[Text]] = Column(Text)  # JSON string
 
+    # Soft Deletion
+    deleted_at: Mapped[Optional[datetime]] = Column(DateTime(timezone=True), nullable=True)
+
     # Metadata
     created_at: Mapped[datetime] = Column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

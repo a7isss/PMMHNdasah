@@ -77,6 +77,9 @@ class Project(BaseModel):
         "notification_contacts": []
     })
 
+    # Soft Deletion
+    deleted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+
     # Relationships
     members: Mapped[List["ProjectMember"]] = relationship(
         "ProjectMember",
@@ -323,4 +326,3 @@ class ProjectMember(BaseModel):
         required_permission = f"{action}_{resource_type}"
 
         return required_permission in user_permissions or action in user_permissions
-

@@ -94,8 +94,13 @@ async def list_projects(
 ):
     """List projects with filtering, search, and pagination."""
 
-    # Base query with tenant isolation
-    query = select(Project).where(Project.tenant_id == current_user.tenant_id)
+    # Base query with tenant isolation and soft delete filter
+    query = select(Project).where(
+        and_(
+            Project.tenant_id == current_user.tenant_id,
+            Project.deleted_at.is_(None)
+        )
+    )
 
     # Apply filters
     if status_filter:
@@ -275,7 +280,7 @@ async def delete_project(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Delete a project."""
+    """Soft delete a project."""
 
     # Check access with owner requirement
     if not await check_project_access(project_id, current_user, db, require_owner=True):
@@ -294,8 +299,8 @@ async def delete_project(
             detail="Project not found"
         )
 
-    # Soft delete by marking as cancelled (don't actually delete due to data integrity)
-    project.status = "cancelled"
+    # Soft delete by setting deleted_at timestamp
+    project.deleted_at = datetime.utcnow()
     project.updated_at = datetime.utcnow()
 
     await db.commit()
@@ -308,7 +313,7 @@ async def delete_project(
         db
     )
 
-    return {"message": "Project deleted successfully"}
+    return {"message": "Project deleted successfully (soft delete)"}
 
 
 # Project Member Management Endpoints

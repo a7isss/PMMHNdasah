@@ -19,6 +19,9 @@ import {
   Add,
   ManageAccounts,
   BusinessCenter,
+  Restore,
+  DeleteSweep,
+  BugReport,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/lib/hooks';
@@ -140,7 +143,7 @@ export default function AdminDashboard() {
       </Card>
 
       {/* Quick Actions */}
-      <Card>
+      <Card sx={{ mb: 4 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             Quick Actions
@@ -172,6 +175,84 @@ export default function AdminDashboard() {
               sx={{ height: 56, flex: 1 }}
             >
               Create Tenant
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Debug & Development Tools */}
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Debug & Development Tools
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            System diagnostics, API testing, and debugging utilities
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<BugReport />}
+              onClick={() => router.push('/admin/debug')}
+              sx={{ height: 56, flex: 1 }}
+              color="warning"
+            >
+              Debug Dashboard
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Data Recovery Section */}
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Data Recovery & Soft Deletes
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            Manage soft-deleted records and restore accidentally deleted data
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<DeleteSweep />}
+              onClick={() => router.push('/admin/deleted/tasks')}
+              sx={{ height: 56, flex: 1 }}
+              color="warning"
+            >
+              View Deleted Tasks
+            </Button>
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<DeleteSweep />}
+              onClick={() => router.push('/admin/deleted/projects')}
+              sx={{ height: 56, flex: 1 }}
+              color="warning"
+            >
+              View Deleted Projects
+            </Button>
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<DeleteSweep />}
+              onClick={() => router.push('/admin/deleted/users')}
+              sx={{ height: 56, flex: 1 }}
+              color="warning"
+            >
+              View Deleted Users
+            </Button>
+            <Button
+              variant="contained"
+              fullWidth
+              startIcon={<Restore />}
+              onClick={() => router.push('/admin/restore')}
+              sx={{ height: 56, flex: 1 }}
+              color="success"
+            >
+              Bulk Restore
             </Button>
           </Box>
         </CardContent>
