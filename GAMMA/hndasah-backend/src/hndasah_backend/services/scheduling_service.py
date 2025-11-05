@@ -7,7 +7,14 @@ from datetime import date, datetime, timedelta
 from typing import List, Dict, Any, Optional, Tuple
 from uuid import UUID
 import structlog
-from ortools.constraint_solver import pywrapcp
+
+# Optional OR-Tools import
+try:
+    from ortools.constraint_solver import pywrapcp
+    ORTOOLS_AVAILABLE = True
+except ImportError:
+    pywrapcp = None
+    ORTOOLS_AVAILABLE = False
 
 from ..models.sqlalchemy.task import Task, TaskDependency
 from ..models.sqlalchemy.project import Project
@@ -29,7 +36,10 @@ class AdvancedSchedulingService:
 
     def _reset_solver(self):
         """Reset the OR-Tools solver."""
-        self.solver = pywrapcp.Solver("AdvancedCPMSolver")
+        if ORTOOLS_AVAILABLE:
+            self.solver = pywrapcp.Solver("AdvancedCPMSolver")
+        else:
+            self.solver = None
 
     async def calculate_critical_path_ortools(
         self,
@@ -43,6 +53,10 @@ class AdvancedSchedulingService:
         This provides more accurate and optimized CPM calculations compared to
         the basic forward/backward pass algorithm.
         """
+        if not ORTOOLS_AVAILABLE:
+            logger.warning("OR-Tools not available, using fallback CPM calculation")
+            return await self._fallback_cpm_calculation(tasks, dependencies)
+
         try:
             self._reset_solver()
 
@@ -304,6 +318,15 @@ class AdvancedSchedulingService:
         Returns:
             ResourceLevelingResult with optimized schedule
         """
+        if not ORTOOLS_AVAILABLE:
+            logger.warning("OR-Tools not available, resource leveling not supported")
+            return ResourceLevelingResult(
+                optimized_schedule=[],
+                resource_utilization={},
+                total_delays=0,
+                optimization_score=0.0
+            )
+
         try:
             self._reset_solver()
 
@@ -504,6 +527,16 @@ class AdvancedSchedulingService:
         Returns:
             Optimized scheduling result
         """
+        if not ORTOOLS_AVAILABLE:
+            logger.warning("OR-Tools not available, schedule optimization not supported")
+            return SchedulingOptimizationResult(
+                optimized_tasks=[],
+                objective_value=0,
+                optimization_goal=optimization_goal,
+                constraints_applied=0,
+                solution_found=False
+            )
+
         try:
             self._reset_solver()
 
