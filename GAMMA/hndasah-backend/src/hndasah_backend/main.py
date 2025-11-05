@@ -19,8 +19,8 @@ from .database import create_tables, get_db, health_check_database, health_check
 # from .routers import auth, projects, tasks, costs, whatsapp, ai, admin
 from .routers import auth, admin  # Enable auth router for superadmin login
 # Temporarily commented out middleware imports to fix Railway deployment
-# from .middleware.tenant_middleware import TenantMiddleware
-# from .middleware.auth_middleware import AuthMiddleware
+from .middleware.tenant_middleware import TenantMiddleware
+from .middleware.auth_middleware import AuthMiddleware
 from .services.ai_service import AIService
 from .services.notification_service import NotificationService
 from .utils.logging import setup_logging
@@ -107,7 +107,7 @@ app.add_middleware(
 
 # Custom middleware - temporarily commented out to fix Railway deployment
 # app.add_middleware(TenantMiddleware)
-# app.add_middleware(AuthMiddleware)
+app.add_middleware(AuthMiddleware)
 
 # Request logging middleware - temporarily commented out to fix Railway deployment
 # @app.middleware("http")

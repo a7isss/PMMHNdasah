@@ -29,6 +29,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
             "/api/redoc",
             "/api/openapi.json",
             "/api/v1/auth/login",
+            "/api/v1/auth/superadmin/login",
             "/api/v1/auth/password-reset",
             "/api/v1/auth/password-reset/confirm"
         ]
