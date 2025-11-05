@@ -7,7 +7,7 @@ from datetime import datetime, date
 from typing import Optional, List, Dict, Any
 from uuid import uuid4
 import structlog
-from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table, CheckConstraint
+from sqlalchemy import Column, String, DateTime, Date, Text, Integer, Boolean, DECIMAL, func, text, ForeignKey, Table, CheckConstraint, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID, JSONB, ARRAY
 from sqlalchemy.orm import Mapped, mapped_column, relationship, declared_attr
 
@@ -63,8 +63,8 @@ class WhatsAppContact(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (contact_type IN ('client', 'contractor', 'supplier', 'team_member', 'other'))"),
-        text("UNIQUE (tenant_id, whatsapp_number)"),
+        CheckConstraint("contact_type IN ('client', 'contractor', 'supplier', 'team_member', 'other')"),
+        UniqueConstraint("tenant_id", "whatsapp_number"),
     )
 
     def get_message_count_by_type(self, message_type: str = None) -> int:
@@ -182,10 +182,10 @@ class WhatsAppMessage(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (direction IN ('inbound', 'outbound'))"),
-        text("CHECK (message_type IN ('text', 'image', 'video', 'audio', 'document', 'location', 'contact'))"),
-        text("CHECK (urgency_level IN ('low', 'medium', 'high', 'critical'))"),
-        text("CHECK (delivery_status IN ('sent', 'delivered', 'read', 'failed'))"),
+        CheckConstraint("direction IN ('inbound', 'outbound')"),
+        CheckConstraint("message_type IN ('text', 'image', 'video', 'audio', 'document', 'location', 'contact')"),
+        CheckConstraint("urgency_level IN ('low', 'medium', 'high', 'critical')"),
+        CheckConstraint("delivery_status IN ('sent', 'delivered', 'read', 'failed')"),
         CheckConstraint("sentiment_score >= -1 AND sentiment_score <= 1 OR sentiment_score IS NULL"),
         CheckConstraint("confidence_score >= 0 AND confidence_score <= 1 OR confidence_score IS NULL"),
     )
@@ -332,7 +332,7 @@ class WhatsAppMessageTemplate(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (approval_status IN ('draft', 'submitted', 'approved', 'rejected'))"),
+        CheckConstraint("approval_status IN ('draft', 'submitted', 'approved', 'rejected')"),
         CheckConstraint("usage_count >= 0"),
     )
 
@@ -375,8 +375,8 @@ class WhatsAppConversation(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (status IN ('active', 'closed', 'archived'))"),
-        text("CHECK (priority IN ('low', 'normal', 'high', 'urgent'))"),
+        CheckConstraint("status IN ('active', 'closed', 'archived')"),
+        CheckConstraint("priority IN ('low', 'normal', 'high', 'urgent')"),
         CheckConstraint("sentiment_trend >= -1 AND sentiment_trend <= 1 OR sentiment_trend IS NULL"),
     )
 
@@ -423,10 +423,7 @@ class WhatsAppWebhookLog(BaseModel):
 
     # Constraints
     __table_args__ = (
-        text("CHECK (processing_status IN ('received', 'processing', 'completed', 'failed'))"),
+        CheckConstraint("processing_status IN ('received', 'processing', 'completed', 'failed')"),
         CheckConstraint("processing_time_ms >= 0 OR processing_time_ms IS NULL"),
         CheckConstraint("messages_processed >= 0"),
     )
-
-
-
