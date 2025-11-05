@@ -8,9 +8,9 @@ from typing import List, Dict, Any, Optional, Tuple
 from uuid import UUID
 import structlog
 
-from models.sqlalchemy.task import Task
-from models.sqlalchemy.user import User
-from schemas.task import DeadlineNotification, NotificationSchedule
+from ..models.sqlalchemy.task import Task
+from ..models.user import User
+from ..schemas.task import DeadlineNotification, NotificationSchedule
 
 logger = structlog.get_logger(__name__)
 
@@ -493,4 +493,3 @@ class DeadlineNotificationService:
                 "due_this_week": 0,
                 "upcoming_deadlines": []
             }
-

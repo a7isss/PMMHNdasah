@@ -13,10 +13,10 @@ import structlog
 from decimal import Decimal
 
 import pandas as pd
-from models.sqlalchemy.task import Task
-from models.sqlalchemy.project import Project
-from models.sqlalchemy.user import User
-from schemas.task import (
+from ..models.sqlalchemy.task import Task
+from ..models.sqlalchemy.project import Project
+from ..models.user import User
+from ..schemas.task import (
     JsonTaskStructure, JsonProjectStructure, ImportResult, ExportResult,
     ImportExportRequest
 )
@@ -453,7 +453,7 @@ class ImportExportService:
                     task_create_data.id = id_mapping[task_data.id]
 
                 # Create task
-                from services.task_service import TaskService
+                from ..services.task_service import TaskService
                 task_service = TaskService()
                 task = await task_service.create_task(task_create_data, project_id, created_by, db_session)
 
@@ -522,7 +522,7 @@ class ImportExportService:
 
     def _json_task_to_task_create(self, json_task: JsonTaskStructure, project_id: str, created_by: str) -> Dict[str, Any]:
         """Convert JsonTaskStructure to TaskCreate data."""
-        from schemas.task import TaskCreate
+        from ..schemas.task import TaskCreate
 
         # Parse dates
         planned_start = None
@@ -621,4 +621,3 @@ class ImportExportService:
             json_task["subtasks"] = subtasks
 
         return json_task
-

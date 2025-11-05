@@ -10,10 +10,10 @@ import structlog
 from ortools.scheduling import pywrapcp
 from ortools.util import pywraputil
 
-from models.sqlalchemy.task import Task, TaskDependency
-from models.sqlalchemy.project import Project
-from models.sqlalchemy.user import User
-from schemas.task import (
+from ..models.sqlalchemy.task import Task, TaskDependency
+from ..models.sqlalchemy.project import Project
+from ..models.user import User
+from ..schemas.task import (
     CPMResult, TaskSchedule, ResourceLevelingResult,
     SchedulingOptimizationResult, TaskConstraint
 )
@@ -664,4 +664,3 @@ class AdvancedSchedulingService:
 
         except Exception as e:
             logger.warning("Failed to apply constraint", constraint=constraint.constraint_type, error=str(e))
-
