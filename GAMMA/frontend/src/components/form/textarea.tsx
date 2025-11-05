@@ -2,7 +2,6 @@
 // Auto-resizing textarea with validation states and accessibility
 
 import React, { useEffect, useRef } from 'react';
-import { LucideIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 export type TextareaVariant = 'default' | 'error' | 'success';
@@ -160,6 +159,4 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(({
 
 Textarea.displayName = 'Textarea';
 
-// Export types
-export type { TextareaProps };
 export default Textarea;
