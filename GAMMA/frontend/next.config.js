@@ -45,7 +45,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://tranquil-enchantment-production.up.railway.app/api/:path*',
+        destination: 'https://backendfantastic-embrace-production.up.railway.app/api/:path*',
       },
     ];
   },
