@@ -2,7 +2,6 @@
 // Comprehensive input with validation states, icons, and accessibility
 
 import React, { useState } from 'react';
-import { LucideIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 // Input variant types
@@ -15,10 +14,6 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
   variant?: InputVariant;
   /** Input size */
   size?: InputSize;
-  /** Left icon */
-  leftIcon?: LucideIcon;
-  /** Right icon */
-  rightIcon?: LucideIcon;
   /** Error message */
   error?: string;
   /** Helper text */
@@ -35,8 +30,6 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 const Input = React.forwardRef<HTMLInputElement, InputProps>(({
   variant = 'default',
   size = 'md',
-  leftIcon: LeftIcon,
-  rightIcon: RightIcon,
   error,
   helperText,
   fullWidth = false,
@@ -89,20 +82,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({
     ),
   };
 
-  // Icon size mapping
-  const iconSizes = {
-    sm: 'w-4 h-4',
-    md: 'w-4 h-4',
-    lg: 'w-5 h-5',
-  };
-
-  // Icon container classes
-  const iconContainerClasses = {
-    sm: 'px-2',
-    md: 'px-3',
-    lg: 'px-3',
-  };
-
   return (
     <div className={cn('flex flex-col', fullWidth && 'w-full')}>
       {/* Label */}
@@ -119,50 +98,25 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({
         </label>
       )}
 
-      {/* Input container */}
-      <div className="relative">
-        {/* Left icon */}
-        {LeftIcon && (
-          <div className={cn(
-            'absolute inset-y-0 left-0 flex items-center pointer-events-none',
-            iconContainerClasses[size]
-          )}>
-            <LeftIcon className={cn('text-gray-400', iconSizes[size])} />
-          </div>
+      {/* Input element */}
+      <input
+        ref={ref}
+        id={inputId}
+        className={cn(
+          baseClasses,
+          sizeClasses[size],
+          variantClasses[variant]
         )}
-
-        {/* Input element */}
-        <input
-          ref={ref}
-          id={inputId}
-          className={cn(
-            baseClasses,
-            sizeClasses[size],
-            variantClasses[variant],
-            LeftIcon && 'pl-10',
-            RightIcon && 'pr-10'
-          )}
-          onFocus={(e) => {
-            setIsFocused(true);
-            props.onFocus?.(e);
-          }}
-          onBlur={(e) => {
-            setIsFocused(false);
-            props.onBlur?.(e);
-          }}
-          {...props}
-        />
-
-        {/* Right icon */}
-        {RightIcon && (
-          <div className={cn(
-            'absolute inset-y-0 right-0 flex items-center pointer-events-none',
-            iconContainerClasses[size]
-          )}>
-            <RightIcon className={cn('text-gray-400', iconSizes[size])} />
-          </div>
-        )}
-      </div>
+        onFocus={(e) => {
+          setIsFocused(true);
+          props.onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setIsFocused(false);
+          props.onBlur?.(e);
+        }}
+        {...props}
+      />
 
       {/* Helper text or error message */}
       {(helperText || error) && (
