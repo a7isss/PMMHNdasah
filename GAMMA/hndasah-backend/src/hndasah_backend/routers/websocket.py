@@ -89,7 +89,7 @@ async def websocket_endpoint(
 
     try:
         # Validate token and extract user info
-        from utils.security import decode_token
+        from ..utils.security import decode_token
 
         payload = decode_token(token)
         user_id = payload.get("user_id") or payload.get("sub")
@@ -170,4 +170,3 @@ async def handle_websocket_message(message: dict, websocket: WebSocket, tenant_i
 
 # Export the router
 ws_router = router
-
