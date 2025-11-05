@@ -221,7 +221,7 @@ export default function ComponentTestPage() {
               <Checkbox
                 label="I agree to the terms and conditions"
                 checked={checkboxChecked}
-                onChange={setCheckboxChecked}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCheckboxChecked(e.target.checked)}
               />
 
               <Checkbox
