@@ -152,6 +152,4 @@ export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(({
 
 Checkbox.displayName = 'Checkbox';
 
-// Export types
-export type { CheckboxProps };
 export default Checkbox;
