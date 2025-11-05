@@ -12,7 +12,13 @@ from pathlib import Path
 import structlog
 from decimal import Decimal
 
-import pandas as pd
+# Optional pandas import for Excel functionality
+try:
+    import pandas as pd
+    PANDAS_AVAILABLE = True
+except ImportError:
+    pd = None
+    PANDAS_AVAILABLE = False
 from ..models.sqlalchemy.task import Task
 from ..models.sqlalchemy.project import Project
 from ..models.sqlalchemy.user import User
@@ -152,6 +158,15 @@ class ImportExportService:
         Returns:
             Import operation results
         """
+        if not PANDAS_AVAILABLE:
+            logger.warning("Pandas not available, Excel import not supported")
+            return ImportResult(
+                total_records=0,
+                successful_imports=0,
+                failed_imports=1,
+                errors=[{"row": 0, "field": "general", "error": "Excel import requires pandas library"}]
+            )
+
         try:
             # Read Excel file
             df = pd.read_excel(excel_content, sheet_name=sheet_name)
@@ -356,6 +371,10 @@ class ImportExportService:
         Returns:
             Export operation results
         """
+        if not PANDAS_AVAILABLE:
+            logger.warning("Pandas not available, Excel export not supported")
+            raise ValueError("Excel export requires pandas library")
+
         try:
             # Prepare data for Excel
             excel_data = []
@@ -504,8 +523,12 @@ class ImportExportService:
             tags=row.get('tags', '').split(',') if row.get('tags') else []
         )
 
-    def _excel_row_to_task_structure(self, row: pd.Series, row_num: int) -> JsonTaskStructure:
+    def _excel_row_to_task_structure(self, row, row_num: int) -> JsonTaskStructure:
         """Convert Excel row to JsonTaskStructure."""
+        # This method should only be called when pandas is available
+        if not PANDAS_AVAILABLE:
+            raise ValueError("Excel functionality requires pandas")
+
         return JsonTaskStructure(
             id=str(row.get('ID')) if pd.notna(row.get('ID')) else None,
             name=str(row.get('Name', f'Imported Task {row_num}')),
