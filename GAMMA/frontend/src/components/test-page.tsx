@@ -235,7 +235,7 @@ export default function ComponentTestPage() {
             <RadioGroup
               label="Choose your preference"
               value={radioValue}
-              onChange={setRadioValue}
+              onChange={(value: string | number) => setRadioValue(value as string)}
             >
               <Radio value="option1" label="Option 1" />
               <Radio value="option2" label="Option 2" />
