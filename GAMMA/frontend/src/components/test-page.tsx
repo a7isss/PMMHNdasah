@@ -212,7 +212,7 @@ export default function ComponentTestPage() {
               label="Choose an option"
               options={selectOptions}
               value={selectValue}
-              onChange={setSelectValue}
+              onChange={(value: string | number | (string | number)[] | null) => setSelectValue(value as string)}
               placeholder="Select an option"
             />
 
