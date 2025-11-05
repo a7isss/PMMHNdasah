@@ -8,7 +8,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 import structlog
 from typing import Optional
 
-from utils.security import decode_token
+from ..utils.security import decode_token
 
 logger = structlog.get_logger(__name__)
 
@@ -181,4 +181,3 @@ def require_tenant(func):
         return await func(*args, **kwargs)
 
     return wrapper
-
