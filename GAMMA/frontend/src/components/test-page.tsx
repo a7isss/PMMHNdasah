@@ -195,8 +195,6 @@ export default function ComponentTestPage() {
               <Input
                 label="Search"
                 placeholder="Search..."
-                leftIcon={() => <span>🔍</span>}
-                rightIcon={() => <span>✕</span>}
               />
             </div>
 
