@@ -397,8 +397,7 @@ async def list_tenants(
 
 @router.post("/superadmin/login", response_model=TokenResponse)
 async def superadmin_login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: AsyncSession = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends()
 ):
     """
     Superadmin login using environment variables.
@@ -409,6 +408,10 @@ async def superadmin_login(
     import os
 
     # Get superadmin credentials from environment variables
+    # Load .env file if it exists
+    from dotenv import load_dotenv
+    load_dotenv()
+
     superadmin_email = os.getenv("SUPERADMIN_EMAIL")
     superadmin_password = os.getenv("SUPERADMIN_PASSWORD")
 
@@ -430,43 +433,44 @@ async def superadmin_login(
         )
 
     # Check if superadmin user exists in database, create if not
-    result = await db.execute(
-        select(User).where(User.email == superadmin_email)
-    )
-    user = result.scalar_one_or_none()
-
-    if not user:
-        # Create superadmin user if it doesn't exist
-        from ..utils.security import get_password_hash
-        from datetime import datetime
-
-        superadmin_user = User(
-            email=superadmin_email,
-            password_hash=get_password_hash(superadmin_password),
-            first_name="Super",
-            last_name="Admin",
-            role="super_admin",
-            is_active=True,
-            is_email_verified=True,
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+    async with get_db() as db:
+        result = await db.execute(
+            select(User).where(User.email == superadmin_email)
         )
+        user = result.scalar_one_or_none()
 
-        db.add(superadmin_user)
+        if not user:
+            # Create superadmin user if it doesn't exist
+            from ..utils.security import get_password_hash
+            from datetime import datetime
+
+            superadmin_user = User(
+                email=superadmin_email,
+                password_hash=get_password_hash(superadmin_password),
+                first_name="Super",
+                last_name="Admin",
+                role="super_admin",
+                is_active=True,
+                is_email_verified=True,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
+            )
+
+            db.add(superadmin_user)
+            await db.commit()
+            await db.refresh(superadmin_user)
+            user = superadmin_user
+
+            logger.info("Superadmin user created", email=superadmin_email)
+
+        # Update last login
+        from datetime import datetime
+        await db.execute(
+            update(User)
+            .where(User.id == user.id)
+            .values(last_login_at=datetime.utcnow())
+        )
         await db.commit()
-        await db.refresh(superadmin_user)
-        user = superadmin_user
-
-        logger.info("Superadmin user created", email=superadmin_email)
-
-    # Update last login
-    from datetime import datetime
-    await db.execute(
-        update(User)
-        .where(User.id == user.id)
-        .values(last_login_at=datetime.utcnow())
-    )
-    await db.commit()
 
     # Create access token
     access_token = auth_service.create_access_token({
