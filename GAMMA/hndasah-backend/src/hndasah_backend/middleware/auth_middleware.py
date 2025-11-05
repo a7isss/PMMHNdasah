@@ -167,6 +167,11 @@ def get_current_user_required(request: Request):
     return user
 
 
+def get_current_user(request: Request):
+    """Alias for get_current_user_required for backward compatibility."""
+    return get_current_user_required(request)
+
+
 def require_auth(func):
     """Decorator to require authentication for a function."""
     async def wrapper(*args, **kwargs):
